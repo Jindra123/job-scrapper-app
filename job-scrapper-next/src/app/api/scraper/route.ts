@@ -1,11 +1,11 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium-min'
 import prisma from '../../../../lib/prisma';
 
 chromium.setGraphicsMode = true;
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
 
     await chromium.font(
         "https://raw.githack.com/googlei18n/noto-emoji/master/fonts/NotoColorEmoji.ttf"
@@ -21,30 +21,53 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     });
 
     try {
-        const { query } = req.body;
+        const { name } = await req.json();
 
         const page = await browser.newPage();
-        await page.goto(`https://www.jobs.cz/prace/praha/?q%5B%5D=react&date=7d`, {
+        await page.goto(`https://www.jobs.cz/prace/praha/?q%5B%5D=${name}&date=7d`, {
             waitUntil: 'networkidle2',
         });
 
+        const cookiesButton = await page.$('.c-bn c_link');
+        if (cookiesButton) {
+            await cookiesButton.click();
+        }
+
         await page.waitForSelector('.SearchResultCard');
 
-        const jobCards = await page.evaluate(() => {
-            const cards: NodeListOf<Element> = document.querySelectorAll('.SearchResultCard');
+        const finalJobCards = [];
 
-            return Array.from(cards).map(card => {
-                const title: | string = card.querySelector('.SearchResultCard__title')?.innerText.trim();
-                const url: string = card.querySelector('.SearchResultCard__title a')?.getAttribute('href');
-                const company: string = card.querySelector('.SearchResultCard__footerItem')?.innerText.trim();
-                const location: string = card.querySelector('[data-test="serp-locality"]')?.innerText.trim();
-                return { title, url, company, location };
+
+        for (let i = 0; i < 3; i++) {
+            const jobCards = await page.evaluate(() => {
+                const cards: NodeListOf<Element> = document.querySelectorAll('.SearchResultCard');
+
+                return Array.from(cards).map(card => {
+                    const title: | string = card.querySelector('.SearchResultCard__title')?.innerText.trim();
+                    const url: string = card.querySelector('.SearchResultCard__title a')?.getAttribute('href');
+                    const company: string = card.querySelector('.SearchResultCard__footerItem')?.innerText.trim();
+                    const location: string = card.querySelector('[data-test="serp-locality"]')?.innerText.trim();
+                    return { title, url, company, location };
+                });
             });
-        });
+
+            finalJobCards.push(...jobCards);
+
+            await page.evaluate(() => {
+                const nextButton = document.querySelector('#search-result-container nav .Pagination li:last-child a') as HTMLAnchorElement;
+                if (nextButton) {
+                    nextButton.click();
+                } else {
+                    throw new Error('Next button not found');
+                }
+            });
+
+            await page.waitForNavigation({ waitUntil: 'networkidle0' })
+        }
 
         await browser.close();
 
-        for (const job of jobCards) {
+        for (const job of finalJobCards) {
             console.log(job)
             await prisma.job.upsert({
                 where: {
@@ -65,8 +88,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
                 },
             });
         }
-
-        return Response.json(jobCards);
+        return Response.json(finalJobCards);
     } catch (error) {
         console.error('Error during scraping:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
