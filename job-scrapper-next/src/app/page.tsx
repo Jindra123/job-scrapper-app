@@ -5,11 +5,15 @@ import { useState } from "react";
 
 export default function Home() {
   const [test, setTest] = useState<object>();
+const [query, setQuery] = useState<object>({name: "react"});
 
   const handleScraper = async () => {
     const res = await fetch("/api/scraper", {
       method: "POST",
-      //body: JSON.stringify({ query: "react" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
     })
         .then((res) => res.json());
     setTest(res);
