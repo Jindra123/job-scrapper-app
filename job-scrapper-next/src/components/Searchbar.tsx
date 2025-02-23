@@ -1,17 +1,43 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AppContext from "@/components/AppContext";
+
+/*export async function getServerSideProps() {
+  const jobs = await prisma.job.findMany();
+  return {
+    props: { jobs },
+  };
+}*/
 
 const Searchbar = () => {
   const [query, setQuery] = useState({ name: "" });
+  const { setListOfJobs } = useContext(AppContext);
 
   const handleScraper = async () => {
-    const res = await fetch("/api/scraper", {
+    await fetch("/api/scraper", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(query),
-    }).then((res) => res.json());
+    }).then(async (res) => {
+      const data = await res.json();
+      setListOfJobs(data);
+    });
+  };
+
+  const handleJobs = async () => {
+    await fetch("/api/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    }).then(async (res) => {
+      const data = await res.json();
+      console.log(data);
+      setListOfJobs(data);
+    });
   };
 
   return (
@@ -64,13 +90,14 @@ const Searchbar = () => {
             width={20}
             height={20}
           />
-          Deploy now
+          Scrape Jobs
         </a>
         <a
           className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
+          onClick={handleJobs}
           rel="noopener noreferrer"
         >
-          Read our docs
+          Get Jobs from DB
         </a>
       </div>
     </div>

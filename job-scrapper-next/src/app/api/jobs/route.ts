@@ -4,19 +4,18 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
-  // Changed to POST
   try {
-    const { search } = await req.json(); // Get search from request body
+    const { name } = await req.json();
+    console.log("search", name);
 
     let whereClause: any = {};
 
-    if (search) {
+    if (name) {
       whereClause = {
-        OR: [
-          { title: { contains: search, mode: "insensitive" } },
-          { company: { contains: search, mode: "insensitive" } },
-          { location: { contains: search, mode: "insensitive" } },
-        ],
+        title: {
+          contains: name,
+          mode: "insensitive",
+        },
       };
     }
 
