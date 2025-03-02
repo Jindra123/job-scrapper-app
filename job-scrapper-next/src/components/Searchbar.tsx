@@ -1,17 +1,30 @@
+"use client";
+
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AppContext from "@/components/AppContext";
+import { scrapeJobs, getJobs } from "@/lib/actions/handlers";
 
 const Searchbar = () => {
   const [query, setQuery] = useState({ name: "" });
+  const { setListOfJobs } = useContext(AppContext);
 
   const handleScraper = async () => {
-    const res = await fetch("/api/scraper", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(query),
-    }).then((res) => res.json());
+    try {
+      const data = await scrapeJobs(query);
+      setListOfJobs(data);
+    } catch (error) {
+      console.error("Error scraping jobs:", error);
+    }
+  };
+
+  const handleJobs = async () => {
+    try {
+      const data = await getJobs(query);
+      setListOfJobs(data);
+    } catch (error) {
+      console.error("Error fetching jobs from DB:", error);
+    }
   };
 
   return (
@@ -64,13 +77,14 @@ const Searchbar = () => {
             width={20}
             height={20}
           />
-          Deploy now
+          Scrape Jobs
         </a>
         <a
           className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
+          onClick={handleJobs}
           rel="noopener noreferrer"
         >
-          Read our docs
+          Get Jobs from DB
         </a>
       </div>
     </div>

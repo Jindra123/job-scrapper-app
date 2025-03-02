@@ -2,7 +2,7 @@ import React from "react";
 
 export interface JobListingCardProps {
   company?: string;
-  position?: string;
+  title?: string;
   description?: string;
   experience?: string;
   salary?: string;
@@ -12,7 +12,7 @@ export interface JobListingCardProps {
 
 const JobListingCard: React.FC<JobListingCardProps> = ({
   company,
-  position,
+  title,
   location,
 }) => {
   return (
@@ -24,7 +24,7 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
             href="#"
             className="mb-3 overflow-hidden pr-7 text-lg font-semibold sm:text-xl"
           >
-            {position}
+            {title}
           </a>
           <p className="overflow-hidden pr-7 text-gray-400 text-sm">
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
