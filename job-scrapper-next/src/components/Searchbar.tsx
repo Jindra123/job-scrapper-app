@@ -1,43 +1,30 @@
+"use client";
+
 import Image from "next/image";
 import { useContext, useState } from "react";
 import AppContext from "@/components/AppContext";
-
-/*export async function getServerSideProps() {
-  const jobs = await prisma.job.findMany();
-  return {
-    props: { jobs },
-  };
-}*/
+import { scrapeJobs, getJobs } from "@/lib/actions/handlers";
 
 const Searchbar = () => {
   const [query, setQuery] = useState({ name: "" });
   const { setListOfJobs } = useContext(AppContext);
 
   const handleScraper = async () => {
-    await fetch("/api/scraper", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(query),
-    }).then(async (res) => {
-      const data = await res.json();
+    try {
+      const data = await scrapeJobs(query);
       setListOfJobs(data);
-    });
+    } catch (error) {
+      console.error("Error scraping jobs:", error);
+    }
   };
 
   const handleJobs = async () => {
-    await fetch("/api/jobs", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(query),
-    }).then(async (res) => {
-      const data = await res.json();
-      console.log(data);
+    try {
+      const data = await getJobs(query);
       setListOfJobs(data);
-    });
+    } catch (error) {
+      console.error("Error fetching jobs from DB:", error);
+    }
   };
 
   return (

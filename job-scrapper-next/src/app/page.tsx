@@ -1,12 +1,12 @@
-"use client";
-
 import Footer from "@/components/Footer";
 import Searchbar from "@/components/Searchbar";
 import JobsScrollGrid from "@/components/JobsScrollGrid";
+import Navbar from "@/components/Navbar";
 
-export default function Home() {
+const Home = async () => {
   return (
-    <div className="grid grid-rows-[10px_1fr_10px] justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[auto_1fr_auto] justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <Navbar />
       <main className="flex flex-col gap-8 row-start-2 items-center">
         <Searchbar />
         <JobsScrollGrid />
@@ -14,4 +14,6 @@ export default function Home() {
       <Footer />
     </div>
   );
-}
+};
+
+export default Home;
