@@ -18,31 +18,49 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Ensure credentials are defined and typed correctly
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Please enter an email and password");
         }
 
+        // Check User table
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
-
-        // Check if user exists and has a password
-        if (!user || !user.password) {
-          throw new Error("No user found with this email or password not set");
+        if (user && user.password) {
+          const isValid = await bcrypt.compare(
+            credentials.password as string,
+            user.password,
+          );
+          if (isValid) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              type: "user",
+            };
+          }
         }
 
-        // Type assertion or check to ensure password is a string
-        const isValid = await bcrypt.compare(
-          credentials.password as string, // Type assertion if needed
-          user.password, // Already checked for null above
-        );
-
-        if (!isValid) {
-          throw new Error("Invalid password");
+        // Check Company table
+        const company = await prisma.company.findUnique({
+          where: { email: credentials.email as string },
+        });
+        if (company && company.password) {
+          const isValid = await bcrypt.compare(
+            credentials.password as string,
+            company.password,
+          );
+          if (isValid) {
+            return {
+              id: company.id,
+              name: company.name,
+              email: company.email,
+              type: "company",
+            };
+          }
         }
 
-        return { id: user.id, name: user.name, email: user.email };
+        throw new Error("Invalid email or password");
       },
     }),
     Github,
@@ -50,6 +68,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/auth/signin",
     newUser: "/auth/register",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.type = user.type; // "user" or "company"
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.type = token.type;
+      session.user.id = token.id as string;
+      return session;
+    },
   },
   debug: true,
 });
