@@ -13,9 +13,67 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id            String    @id @default(uuid()) @map("_id")
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Company {
+  id            String    @id @default(uuid()) @map("_id")
+  name          String
+  email         String    @unique
+  password      String?
+  ico           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  jobs          Job[]
+  accounts      Account[] // OAuth accounts for company login
+  sessions      Session[]
+}
+
+model Job {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  company       String
+  location      String
+  url           String?
+  status        String    @default("pending")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  description   String?
+  salaryMin     Float?
+  salaryMax     Float?
+  salaryType    String?   @default("monthly")
+  currency      String?   @default("CZK")
+  experience    String?
+  employmentType String?
+  remote        Boolean?  @default(false)
+  bonuses       String?
+  benefits      String?
+  requirements  String?
+  responsibilities String?
+  skills        String[]
+  postedDate    DateTime?
+  expiresDate   DateTime?
+  source        String    @default("website") // "website" or "scraped"
+  creator       Company?  @relation(fields: [creatorId], references: [id])
+  creatorId     String?
+
+  @@unique([title, company, location])
+}
+
 model Account {
   id                String    @id @default(uuid()) @map("_id")
-  userId            String    // References User.id (UUID)
+  userId            String?
+  companyId         String?   // Added for company OAuth
   type              String
   provider          String
   providerAccountId String
@@ -28,32 +86,22 @@ model Account {
   session_state     String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company           Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
   id           String   @id @default(uuid()) @map("_id")
-  userId       String   // References User.id (UUID)
+  userId       String?
+  companyId    String?   // Added for company sessions
   expires      DateTime
   sessionToken String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(uuid()) @map("_id")
-  name          String?
-  email         String    @unique // Required for credentials
-  emailVerified DateTime? // Optional: track email verification
-  password      String?   // Store hashed password for credentials
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company      Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -65,17 +113,4 @@ model VerificationToken {
   updatedAt  DateTime @updatedAt
 
   @@unique([identifier, token])
-}
-
-model Job {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  company     String
-  location    String
-  url         String
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([title, company, location])
 }

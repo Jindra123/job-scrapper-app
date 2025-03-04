@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    const cookiesButton = await page.$(".c-bn c_link");
+    const cookiesButton = await page.$(".c-bn.c_link");
     if (cookiesButton) {
       await cookiesButton.click();
     }
@@ -92,25 +92,27 @@ export async function POST(req: NextRequest) {
       await prisma.job.upsert({
         where: {
           title_company_location: {
-            // Use the composite unique key
             title: job.title,
             company: job.company,
             location: job.location,
           },
         },
         update: {
-          url: job.url, // Update the URL or other fields
+          url: job.url,
+          source: "scraped", // Ensure scraped jobs are marked
         },
         create: {
           url: job.url,
           title: job.title,
           company: job.company,
           location: job.location,
+          source: "scraped", // Mark as scraped
         },
       });
     }
     return Response.json(finalJobCards);
   } catch (error) {
     console.error("Error during scraping:", error);
+    return Response.json({ error: "Scraping failed" }, { status: 500 });
   }
 }
