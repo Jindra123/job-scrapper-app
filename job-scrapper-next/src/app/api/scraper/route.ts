@@ -44,20 +44,20 @@ export async function POST(req: NextRequest) {
 
     for (let i = 0; i < 3; i++) {
       const jobCards = await page.evaluate(() => {
-        const cards: NodeListOf<Element> =
+        const cards: NodeListOf<HTMLElement> =
           document.querySelectorAll(".SearchResultCard");
 
         return Array.from(cards).map((card) => {
-          const title: string = card
+          const title: HTMLElement = card
             .querySelector(".SearchResultCard__title")
             ?.innerText.trim();
-          const url: string = card
+          const url: HTMLAnchorElement = card
             .querySelector(".SearchResultCard__title a")
             ?.getAttribute("href");
-          const company: string = card
+          const company: HTMLElement = card
             .querySelector(".SearchResultCard__footerItem")
             ?.innerText.trim();
-          const location: string = card
+          const location: HTMLElement = card
             .querySelector('[data-test="serp-locality"]')
             ?.innerText.trim();
           return { title, url, company, location };
