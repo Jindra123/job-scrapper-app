@@ -29,8 +29,8 @@ export default function CompanyRegisterPage() {
       }
 
       router.push("/auth/signin");
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
+    } catch {
+      setError("An error occurred");
     }
   };
 
