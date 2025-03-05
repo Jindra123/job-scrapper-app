@@ -48,18 +48,26 @@ export async function POST(req: NextRequest) {
           document.querySelectorAll(".SearchResultCard");
 
         return Array.from(cards).map((card) => {
-          const title: HTMLElement = card
-            .querySelector(".SearchResultCard__title")
-            ?.innerText.trim();
-          const url: HTMLAnchorElement = card
-            .querySelector(".SearchResultCard__title a")
-            ?.getAttribute("href");
-          const company: HTMLElement = card
-            .querySelector(".SearchResultCard__footerItem")
-            ?.innerText.trim();
-          const location: HTMLElement = card
-            .querySelector('[data-test="serp-locality"]')
-            ?.innerText.trim();
+          const titleElement = card.querySelector(
+            ".SearchResultCard__title",
+          ) as HTMLElement | null;
+          const title: string = titleElement?.innerText.trim() || "";
+
+          const urlElement = card.querySelector(
+            ".SearchResultCard__title a",
+          ) as HTMLAnchorElement | null;
+          const url: string = urlElement?.getAttribute("href") || "";
+
+          const companyElement = card.querySelector(
+            ".SearchResultCard__footerItem",
+          ) as HTMLElement | null;
+          const company: string = companyElement?.innerText.trim() || "";
+
+          const locationElement = card.querySelector(
+            '[data-test="serp-locality"]',
+          ) as HTMLElement | null;
+          const location: string = locationElement?.innerText.trim() || "";
+
           return { title, url, company, location };
         });
       });
