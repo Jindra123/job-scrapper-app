@@ -39,13 +39,19 @@ model Company {
   sessions      Session[]
 }
 
+enum JobStatus {
+  PENDING
+  ACTIVE
+  CLOSED
+}
+
 model Job {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   company       String
   location      String
   url           String?
-  status        String    @default("pending")
+  status        JobStatus @default(PENDING)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   description   String?
@@ -61,9 +67,10 @@ model Job {
   requirements  String?
   responsibilities String?
   skills        String[]
-  postedDate    DateTime?
+  postedDate    DateTime? @default(now())
   expiresDate   DateTime?
-  source        String    @default("website") // "website" or "scraped"
+  source        String    @default("website")
+  category      String?
   creator       Company?  @relation(fields: [creatorId], references: [id])
   creatorId     String?
 

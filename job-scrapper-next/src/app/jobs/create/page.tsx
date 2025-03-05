@@ -52,7 +52,7 @@ const CreateJobPage = () => {
       }
 
       router.push("/"); // Redirect to home or job list page
-    } catch (err: any) {
+    } catch (err: never) {
       setError(err.message || "An error occurred");
     }
   };
@@ -177,7 +177,7 @@ const CreateJobPage = () => {
             type="checkbox"
             checked={formData.remote}
             onChange={handleChange}
-            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-700 rounded bg-transparent"
+            className="h-4 w-4 appearance-none border text-purple-500 checked:border-purple-500 hover:border-purple-500 border-white rounded bg-transparent"
           />
           <label htmlFor="remote" className="ml-2 text-sm text-gray-400">
             Remote Job
