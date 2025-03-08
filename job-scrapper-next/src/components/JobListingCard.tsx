@@ -20,12 +20,9 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
       <div className="group mx-2 mt-10 grid max-w-screen-md grid-cols-12 space-x-8 overflow-hidden rounded-md border py-8 text-white shadow transition hover:shadow-lg sm:mx-auto duration-300 hover:rotate-1">
         <div className="col-span-11 mx-2 flex flex-col pr-8 text-left sm:pl-4">
           <h3 className="text-sm text-pink-500">{company}</h3>
-          <a
-            href="#"
-            className="mb-3 overflow-hidden pr-7 text-lg font-semibold sm:text-xl"
-          >
+          <h1 className="mb-3 overflow-hidden pr-7 text-lg font-semibold sm:text-xl">
             {title}
-          </a>
+          </h1>
           <p className="overflow-hidden pr-7 text-gray-400 text-sm">
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
             nonummy nibh euismod tincidunt ut laoreet dolore magna .
