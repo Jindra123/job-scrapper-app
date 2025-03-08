@@ -44,22 +44,30 @@ export async function POST(req: NextRequest) {
 
     for (let i = 0; i < 3; i++) {
       const jobCards = await page.evaluate(() => {
-        const cards: NodeListOf<Element> =
+        const cards: NodeListOf<HTMLElement> =
           document.querySelectorAll(".SearchResultCard");
 
         return Array.from(cards).map((card) => {
-          const title: string = card
-            .querySelector(".SearchResultCard__title")
-            ?.innerText.trim();
-          const url: string = card
-            .querySelector(".SearchResultCard__title a")
-            ?.getAttribute("href");
-          const company: string = card
-            .querySelector(".SearchResultCard__footerItem")
-            ?.innerText.trim();
-          const location: string = card
-            .querySelector('[data-test="serp-locality"]')
-            ?.innerText.trim();
+          const titleElement = card.querySelector(
+            ".SearchResultCard__title",
+          ) as HTMLElement | null;
+          const title: string = titleElement?.innerText.trim() || "";
+
+          const urlElement = card.querySelector(
+            ".SearchResultCard__title a",
+          ) as HTMLAnchorElement | null;
+          const url: string = urlElement?.getAttribute("href") || "";
+
+          const companyElement = card.querySelector(
+            ".SearchResultCard__footerItem",
+          ) as HTMLElement | null;
+          const company: string = companyElement?.innerText.trim() || "";
+
+          const locationElement = card.querySelector(
+            '[data-test="serp-locality"]',
+          ) as HTMLElement | null;
+          const location: string = locationElement?.innerText.trim() || "";
+
           return { title, url, company, location };
         });
       });

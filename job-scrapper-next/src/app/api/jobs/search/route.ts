@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+
+type JobWhereClause = Prisma.JobWhereInput;
 
 const prisma = new PrismaClient();
 
@@ -7,7 +9,7 @@ export async function POST(req: Request) {
   const { query, source } = await req.json();
 
   try {
-    const whereClause: any = {
+    const whereClause: JobWhereClause = {
       OR: [
         { title: { contains: query, mode: "insensitive" } },
         { company: { contains: query, mode: "insensitive" } },
