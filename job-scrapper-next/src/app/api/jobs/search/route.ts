@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     const jobs = await prisma.job.findMany({
       where: whereClause,
-      take: 100, // Limit results
+      //take: 100, // Limit results
     });
 
     return NextResponse.json({ jobs });

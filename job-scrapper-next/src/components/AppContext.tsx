@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import { JobListingCardProps } from "@/components/JobListingCard";
+import { Job } from "@/types/Job";
 
 interface AppContextType {
-  listOfJobs: JobListingCardProps[];
-  setListOfJobs: (listOfJobs: JobListingCardProps[]) => void;
+  listOfJobs: Job[];
+  setListOfJobs: (listOfJobs: Job[]) => void;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -16,7 +16,7 @@ const AppContext = createContext<AppContextType>({
 export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
-  const [listOfJobs, setListOfJobs] = useState<JobListingCardProps[]>([]);
+  const [listOfJobs, setListOfJobs] = useState<Job[]>([]);
 
   useEffect(() => {
     const storedJobs = localStorage.getItem("listOfJobs");
@@ -29,7 +29,7 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
           Array.isArray(parsedJobs) &&
           parsedJobs.every((job) => typeof job === "object" && job !== null)
         ) {
-          setListOfJobs(parsedJobs as JobListingCardProps[]);
+          setListOfJobs(parsedJobs as Job[]);
         } else {
           console.warn(
             "Invalid data in localStorage for listOfJobs. Clearing.",
