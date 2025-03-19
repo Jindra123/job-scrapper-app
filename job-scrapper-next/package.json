@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroui/react": "2.7.4",
+    "framer-motion": "12.4.10",
     "@auth/prisma-adapter": "^2.8.0",
     "@prisma/client": "^6.3.1",
     "@sparticuz/chromium-min": "^126.0.0",
