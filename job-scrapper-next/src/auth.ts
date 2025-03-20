@@ -22,7 +22,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           throw new Error("Please enter an email and password");
         }
 
-        // Check User table
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
@@ -36,12 +35,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               id: user.id,
               name: user.name,
               email: user.email,
-              type: "user",
+              role: user.role, // Only include role
             };
           }
         }
 
-        // Check Company table
         const company = await prisma.company.findUnique({
           where: { email: credentials.email as string },
         });
@@ -55,7 +53,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               id: company.id,
               name: company.name,
               email: company.email,
-              type: "company",
+              role: company.role,
             };
           }
         }
@@ -63,17 +61,41 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         throw new Error("Invalid email or password");
       },
     }),
-    Github,
+    Github({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
   ],
   pages: {
     signIn: "/auth/signin",
     newUser: "/auth/register",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (user && account) {
-        token.id = user.id; // From User
-        token.type = account.type; // From Account (e.g., "oauth", "credentials")
+    async signIn({ user, account }) {
+      if (account?.provider === "github" && user.email) {
+        let dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name || user.email.split("@")[0],
+              role: "USER",
+            },
+          });
+        }
+
+        user.id = dbUser.id;
+        user.role = dbUser.role;
+      }
+      return true;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
@@ -81,8 +103,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (token.id) {
         session.user.id = token.id;
       }
-      if (token.type) {
-        session.user.type = token.type;
+      if (token.role) {
+        session.user.role = token.role;
       }
       return session;
     },

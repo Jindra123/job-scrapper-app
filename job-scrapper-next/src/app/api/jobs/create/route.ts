@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
 
-  if (!token || token.type !== "company") {
+  if (!token || token.role !== "COMPANY") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

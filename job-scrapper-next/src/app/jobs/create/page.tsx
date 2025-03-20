@@ -52,8 +52,8 @@ const CreateJobPage = () => {
       }
 
       router.push("/"); // Redirect to home or job list page
-    } catch {
-      setError("An error occurred");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
     }
   };
 

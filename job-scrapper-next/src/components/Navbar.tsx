@@ -18,11 +18,13 @@ const Navbar = async () => {
               <span className="text-white text-sm font-medium">
                 {session.user.email}
               </span>
-              <Link href="/jobs/create">
-                <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
-                  Create new job offer
-                </button>
-              </Link>
+              {session?.user.role === "COMPANY" && (
+                <Link href="/jobs/create">
+                  <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
+                    Create new job offer
+                  </button>
+                </Link>
+              )}
               <SignOutButton />
             </>
           ) : (

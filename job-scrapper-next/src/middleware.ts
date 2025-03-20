@@ -35,7 +35,7 @@ export default async function middleware(req: NextRequest) {
       redirectUrl.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(redirectUrl);
     }
-    if (session.type !== "company") {
+    if (session.role !== "COMPANY") {
       return NextResponse.redirect(new URL("/", req.url));
     }
   }

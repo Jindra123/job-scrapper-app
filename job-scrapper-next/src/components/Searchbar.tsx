@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useContext, useState } from "react";
 import AppContext from "@/components/AppContext";
 
@@ -31,14 +30,12 @@ const Searchbar = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <Image
-        className="dark:invert mx-auto"
-        src="/next.svg"
-        alt="Next.js logo"
-        width={180}
-        height={38}
-        priority
-      />
+      <h1 className="text-2xl font-semibold text-pink-500 text-center">
+        Find Your Next Job
+      </h1>
+      <p className="text-center text-gray-400 mt-2">
+        ...your dream career is just a search away
+      </p>
       <form onSubmit={handleSearch} className="mt-8 space-y-4">
         <div className="flex px-4 py-3 rounded-md border-2 border-[#f2f2f2] overflow-hidden">
           <input
