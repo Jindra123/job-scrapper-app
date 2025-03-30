@@ -2,6 +2,7 @@
 
 import { useContext, useState } from "react";
 import AppContext from "@/components/AppContext";
+import { Button } from "@heroui/react";
 
 const Searchbar = () => {
   const [query, setQuery] = useState({ name: "" });
@@ -89,12 +90,12 @@ const Searchbar = () => {
             Scraped Jobs
           </label>
         </div>
-        <button
+        <Button
           type="submit"
           className="w-full px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full"
         >
           Search
-        </button>
+        </Button>
       </form>
     </div>
   );

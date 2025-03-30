@@ -7,6 +7,12 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+declare module "next-auth" {
+  interface User {
+    role?: string; 
+  }
+}
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -35,7 +41,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               id: user.id,
               name: user.name,
               email: user.email,
-              role: user.role, // Only include role
+              role: user.role, 
             };
           }
         }
@@ -100,11 +106,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token.id) {
-        session.user.id = token.id;
-      }
-      if (token.role) {
-        session.user.role = token.role;
+      if (token) {
+        session.user = {
+          ...session.user,
+          role: token.role as string,
+        };
       }
       return session;
     },

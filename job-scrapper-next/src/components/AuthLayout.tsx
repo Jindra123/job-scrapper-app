@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+import { Link, Button } from "@heroui/react";
 
 interface AuthLayoutProps {
   title: string;
@@ -8,7 +8,6 @@ interface AuthLayoutProps {
   footerText: string;
   footerLinkText: string;
   footerLinkHref: string;
-  error?: string;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({
@@ -18,7 +17,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   footerText,
   footerLinkText,
   footerLinkHref,
-  error,
 }) => {
   return (
     <div className="flex items-center justify-center min-h-screen p-5">
@@ -29,23 +27,20 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             {title}
           </h1>
           {children}
-          {error && (
-            <p className="mt-4 text-center text-sm text-red-500">{error}</p>
-          )}
           <div className="mt-5 flex flex-col items-center space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4 text-sm text-gray-400">
             <p>
               {footerText}{" "}
-              <a
+              <Link
                 href={footerLinkHref}
                 className="text-blue-400 hover:underline"
               >
                 {footerLinkText}
-              </a>
+              </Link>
             </p>
             <Link href="/">
-              <button className="bg-gray-600 text-white py-1 px-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300">
+              <Button className="bg-gray-600 text-white py-1 px-3 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300">
                 Home
-              </button>
+              </Button>
             </Link>
           </div>
         </div>

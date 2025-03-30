@@ -3,17 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
+import { addToast, Link, Button } from '@heroui/react';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     try {
       const res = await fetch("/api/register", {
@@ -22,14 +21,19 @@ export default function RegisterPage() {
         body: JSON.stringify({ email, password, name }),
       });
 
+      // Using Toasts for error message and successful message
       if (!res.ok) {
         const { error } = await res.json();
+        addToast({title: "Registration error", description:  error, color: "danger"});
         throw new Error(error || "Registration failed");
-      }
+      } 
 
+      addToast({title: "Registration successful", color: "success"});
       router.push("/auth/signin");
-    } catch {
-      setError("An error occurred");
+      // Handle error if sign-in fails
+    } catch(error) {
+      console.error("Error during registration:", error);
+      addToast({title: "Registration error", description: "An unexpected error occurred. Please try again later.", color: "danger"});
     }
   };
 
@@ -40,7 +44,6 @@ export default function RegisterPage() {
       footerText="Already have an account?"
       footerLinkText="Sign in"
       footerLinkHref="/auth/signin"
-      error={error}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -85,21 +88,21 @@ export default function RegisterPage() {
             className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
           />
         </div>
-        <button
+        <Button
           type="submit"
           className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
         >
           Register
-        </button>
+        </Button>
       </form>
       <p className="mt-4 text-center text-sm text-gray-400">
         Want to post jobs?{" "}
-        <a
+        <Link
           href="/auth/company/register"
           className="text-blue-400 hover:underline"
         >
           Register as Company
-        </a>
+        </Link>
       </p>
     </AuthLayout>
   );

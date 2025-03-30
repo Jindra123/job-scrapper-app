@@ -2,13 +2,18 @@
 
 import SignOutButton from "@/components/buttons/SignOutButton";
 import { auth } from "@/auth";
-import Link from "next/link";
+import LoginButton from "./buttons/LoginButton";
+import CompaniesButton from "./buttons/CompaniesButton";
+import CreateJobButton from "./buttons/CreateJobButton";
+import ServerToast from "./ServerToast";
 
 const Navbar = async () => {
-  const session = await auth();
-  console.log(session);
 
-  return (
+  try {
+    const session = await auth();
+    console.log(session);
+    
+    return (
     <header className="w-full max-w-5xl mx-auto">
       <nav className="flex justify-between items-center py-4 px-4">
         <div className="text-lg font-semibold text-white">NextJobs</div>
@@ -19,32 +24,24 @@ const Navbar = async () => {
                 {session.user.email}
               </span>
               {session?.user.role === "COMPANY" && (
-                <Link href="/jobs/create">
-                  <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
-                    Create new job offer
-                  </button>
-                </Link>
+                <CreateJobButton/>
               )}
               <SignOutButton />
             </>
           ) : (
             <>
-              <Link href="/auth/signin">
-                <button className="px-4 py-2 border border-solid border-purple-500/[.8] text-white transition-colors hover:bg-purple-200 hover:text-purple-900 rounded-full">
-                  Login / Register
-                </button>
-              </Link>
-              <Link href="/auth/company/register">
-                <button className="px-4 py-2 border border-solid border-blue-500/[.8] text-white transition-colors hover:bg-blue-200 hover:text-blue-900 rounded-full">
-                  For Companies
-                </button>
-              </Link>
+              <LoginButton/>
+              <CompaniesButton/>
             </>
           )}
         </div>
       </nav>
     </header>
   );
+  } catch (error) { // Handle error if session fetching fails
+    console.error("Error fetching session:", error);
+    return <ServerToast title={"Session error"} description={"An unexpected error occurred. Please try again later."} color="danger" />;
+  } 
 };
 
 export default Navbar;

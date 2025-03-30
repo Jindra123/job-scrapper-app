@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
+import { Button, addToast } from "@heroui/react";
 
 const CreateJobPage = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +18,6 @@ const CreateJobPage = () => {
     bonuses: "",
     benefits: "",
   });
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleChange = (
@@ -33,7 +33,6 @@ const CreateJobPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     try {
       const res = await fetch("/api/jobs/create", {
@@ -48,12 +47,15 @@ const CreateJobPage = () => {
 
       if (!res.ok) {
         const { error } = await res.json();
+        addToast({title: "Job creation failed", description:  error, color: "danger"});
         throw new Error(error || "Failed to create job");
       }
 
+      addToast({title: "Job creation successful", color:"success"})
       router.push("/"); // Redirect to home or job list page
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      console.error("Error during job creation:", error);
+      addToast({title: "Job creation failed", description: "An unexpected error occurred. Please try again later.", color: "danger"});
     }
   };
 
@@ -64,7 +66,6 @@ const CreateJobPage = () => {
       footerText="Back to"
       footerLinkText="Sign In"
       footerLinkHref="/auth/signin"
-      error={error}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -211,12 +212,12 @@ const CreateJobPage = () => {
             className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
           />
         </div>
-        <button
+        <Button
           type="submit"
           className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
         >
           Create Job Offer
-        </button>
+        </Button>
       </form>
     </AuthLayout>
   );

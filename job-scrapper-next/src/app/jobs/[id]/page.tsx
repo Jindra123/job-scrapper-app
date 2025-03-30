@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link }from "@heroui/react";
 import Image from "next/image";
 
 const prisma = new PrismaClient();
@@ -154,14 +154,14 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   {job.source || "Website"}
                 </p>
               </div>
-              <a
+              <Link
                 href={job.url || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-6 w-full bg-orange-600 text-white py-3 px-4 rounded-md hover:bg-orange-700 transition text-center block"
               >
                 Apply Now
-              </a>
+              </Link>
             </section>
           </div>
         </div>
