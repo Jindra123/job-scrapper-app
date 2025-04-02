@@ -2,7 +2,8 @@
 
 import { useContext, useState } from "react";
 import AppContext from "@/components/AppContext";
-import { Button } from "@heroui/react";
+import { Button, RadioGroup, addToast } from "@heroui/react";
+import CustomRadio from './CustomRadio';
 
 const Searchbar = () => {
   const [query, setQuery] = useState({ name: "" });
@@ -11,21 +12,33 @@ const Searchbar = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(sourceFilter);
     try {
       const res = await fetch("/api/jobs/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: query.name, source: sourceFilter }),
       });
+      // Using Toasts for error message and successful message
+      const data = await res.json();
 
       if (!res.ok) {
-        throw new Error("Search failed");
+        addToast({
+          title: "Search failed",
+          description: data.error || "An unexpected error occurred. Please try again later.",
+          color: "danger"
+        });
+        throw new Error(data.error || "Search failed");
       }
 
-      const data = await res.json();
       setListOfJobs(data.jobs);
     } catch (error) {
       console.error("Error searching jobs:", error);
+      addToast({
+        title: "Search failed",
+        description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again later.",
+        color: "danger"
+      })
     }
   };
 
@@ -56,43 +69,30 @@ const Searchbar = () => {
           </svg>
         </div>
         <div className="flex gap-4 justify-center text-sm text-gray-400">
-          <label className="flex items-center">
-            <input
-              type="radio"
+          <RadioGroup value={sourceFilter} onValueChange={setSourceFilter} orientation="horizontal" classNames={{wrapper: "gap-4"}}>
+            <CustomRadio
               name="source"
               value="all"
-              checked={sourceFilter === "all"}
-              onChange={() => setSourceFilter("all")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
+            >
             All Jobs
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
+            </CustomRadio>
+            <CustomRadio
               name="source"
               value="website"
-              checked={sourceFilter === "website"}
-              onChange={() => setSourceFilter("website")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
+            >
             Website Jobs
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
+            </CustomRadio>
+            <CustomRadio
               name="source"
               value="scraped"
-              checked={sourceFilter === "scraped"}
-              onChange={() => setSourceFilter("scraped")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
+            >
             Scraped Jobs
-          </label>
+            </CustomRadio>
+          </RadioGroup>
         </div>
         <Button
           type="submit"
-          className="w-full px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full"
+          className="w-full px-4 py-2 border border-solid border-orange-500/[.8] bg-transparent text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full"
         >
           Search
         </Button>

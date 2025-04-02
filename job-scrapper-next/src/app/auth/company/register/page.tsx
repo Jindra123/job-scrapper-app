@@ -24,15 +24,26 @@ export default function CompanyRegisterPage() {
 
       if (!res.ok) {
         const { error } = await res.json();
-        addToast({title: "Registration error", description:  error, color: "danger"});
+        addToast({
+          title: "Registration error",
+          description: error,
+          color: "danger"
+        });
         throw new Error(error || "Registration failed");
       }
 
-      addToast({title: "Registration successful", color: "success"});
+      addToast({
+        title: "Registration successful",
+        color: "success"
+      });
       router.push("/auth/signin");
     } catch(error) {
       console.error("Error during registration:", error);
-      addToast({title: "Registration error", description: "An unexpected error occurred. Please try again later.", color: "danger"});
+      addToast({
+        title: "Registration error",
+        description: "An unexpected error occurred. Please try again later.",
+        color: "danger"
+      });
     }
   };
 

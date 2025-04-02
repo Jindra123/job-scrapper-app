@@ -47,15 +47,26 @@ const CreateJobPage = () => {
 
       if (!res.ok) {
         const { error } = await res.json();
-        addToast({title: "Job creation failed", description:  error, color: "danger"});
+        addToast({
+          title: "Job creation failed",
+          description: error,
+          color: "danger"
+        });
         throw new Error(error || "Failed to create job");
       }
 
-      addToast({title: "Job creation successful", color:"success"})
+      addToast({
+        title: "Job creation successful",
+        color: "success"
+      })
       router.push("/"); // Redirect to home or job list page
     } catch (error) {
       console.error("Error during job creation:", error);
-      addToast({title: "Job creation failed", description: "An unexpected error occurred. Please try again later.", color: "danger"});
+      addToast({
+        title: "Job creation failed",
+        description: "An unexpected error occurred. Please try again later.",
+        color: "danger"
+      });
     }
   };
 

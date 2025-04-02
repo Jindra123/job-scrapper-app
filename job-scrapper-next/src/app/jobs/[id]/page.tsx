@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
-import { Link }from "@heroui/react";
+import Link from "next/link";
 import Image from "next/image";
 
 const prisma = new PrismaClient();

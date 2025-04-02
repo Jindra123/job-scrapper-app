@@ -23,15 +23,26 @@ export default function SignInPage() {
       });
       // Using Toasts for error message and successful message
       if (res?.error) {
-        addToast({ title: "Sign-in error", description: res.error, color: "danger" });
+        addToast({
+          title: "Sign-in error",
+          description: res.error,
+          color: "danger"
+        });
       } else {
-        addToast({ title: "Login successful", color: "success" });
+        addToast({
+          title: "Login successful",
+          color: "success"
+        });
         router.push("/");
       }
       // Handle error if sign-in fails
     } catch (error) {
       console.error("Error during sign-in:", error);
-      addToast({ title: "Sign-in error", description: "An unexpected error occurred. Please try again later.", color: "danger" });
+      addToast({
+        title: "Sign-in error",
+        description: "An unexpected error occurred. Please try again later.",
+        color: "danger"
+      });
     }
   };
 

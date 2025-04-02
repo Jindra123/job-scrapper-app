@@ -24,16 +24,27 @@ export default function RegisterPage() {
       // Using Toasts for error message and successful message
       if (!res.ok) {
         const { error } = await res.json();
-        addToast({title: "Registration error", description:  error, color: "danger"});
+        addToast({
+          title: "Registration error",
+          description: error,
+          color: "danger"
+        });
         throw new Error(error || "Registration failed");
       } 
 
-      addToast({title: "Registration successful", color: "success"});
+      addToast({
+        title: "Registration successful",
+        color: "success"
+      });
       router.push("/auth/signin");
       // Handle error if sign-in fails
     } catch(error) {
       console.error("Error during registration:", error);
-      addToast({title: "Registration error", description: "An unexpected error occurred. Please try again later.", color: "danger"});
+      addToast({
+        title: "Registration error",
+        description: "An unexpected error occurred. Please try again later.",
+        color: "danger"
+      });
     }
   };
 
