@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const whereClause: JobWhereClause = {
       OR: [
         { title: { contains: query, mode: "insensitive" } },
-        { company: { contains: query, mode: "insensitive" } },
+        { creator: { name: { contains: query, mode: "insensitive" } } },
         { location: { contains: query, mode: "insensitive" } },
       ],
     };
@@ -23,6 +23,9 @@ export async function POST(req: Request) {
 
     const jobs = await prisma.job.findMany({
       where: whereClause,
+      include: {
+        creator: true, // Include company information
+      },
       //take: 100, // Limit results
     });
 

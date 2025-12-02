@@ -14,7 +14,6 @@ export async function POST(req: Request) {
   const body = await req.json();
   const {
     title,
-    company,
     location,
     description,
     salaryMin,
@@ -23,11 +22,18 @@ export async function POST(req: Request) {
     remote,
     bonuses,
     benefits,
+    url, // Add url to body destructuring
+    skills, // Add skills to body destructuring
+    postedDate, // Add postedDate
+    expiresDate, // Add expiresDate
+    source, // Add source
+    category, // Add category
+    experience, // Add experience
   } = body;
 
-  if (!title || !company || !location) {
+  if (!title || !location) {
     return NextResponse.json(
-      { error: "Title, company, and location are required" },
+      { error: "Title and location are required" },
       { status: 400 },
     );
   }
@@ -36,7 +42,6 @@ export async function POST(req: Request) {
     const job = await prisma.job.create({
       data: {
         title,
-        company,
         location,
         description,
         salaryMin,
@@ -46,7 +51,13 @@ export async function POST(req: Request) {
         bonuses,
         benefits,
         creatorId: token.id as string,
-        source: "website", // Explicitly set for website-created jobs
+        url,
+        skills,
+        postedDate,
+        expiresDate,
+        source,
+        category,
+        experience,
       },
     });
 

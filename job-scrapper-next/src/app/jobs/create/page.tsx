@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/components/AuthLayout";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const CreateJobPage = () => {
   const [formData, setFormData] = useState({
     title: "",
-    company: "",
     location: "",
     description: "",
     salaryMin: "",
@@ -51,174 +51,137 @@ const CreateJobPage = () => {
         throw new Error(error || "Failed to create job");
       }
 
-      router.push("/"); // Redirect to home or job list page
-    } catch {
-      setError("An error occurred");
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
     }
   };
 
   return (
-    <AuthLayout
-      title="Create Job Offer"
-      subheading="Post a New Opportunity"
-      footerText="Back to"
-      footerLinkText="Sign In"
-      footerLinkHref="/auth/signin"
-      error={error}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block text-sm text-gray-400">
-            Title
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder="Job title"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
+    <div className="min-h-screen text-white">
+      <Navbar />
+      <main className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10">
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-pink-500 text-center">
+              Create a New Job Offer
+            </h1>
+            <p className="text-sm text-gray-400 text-center mb-8">
+              Fill in the details below to post a new job opportunity.
+            </p>
+
+            {error && (
+              <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-md my-4">
+                <p>{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input
+                  name="title"
+                  type="text"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                  placeholder="Job Title"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+                <input
+                  name="location"
+                  type="text"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                  placeholder="Location (e.g., 'San Francisco, CA')"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+              </div>
+
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Job Description"
+                rows={5}
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input
+                  name="salaryMin"
+                  type="number"
+                  value={formData.salaryMin}
+                  onChange={handleChange}
+                  placeholder="Minimum Salary"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+                <input
+                  name="salaryMax"
+                  type="number"
+                  value={formData.salaryMax}
+                  onChange={handleChange}
+                  placeholder="Maximum Salary"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+              </div>
+
+              <input
+                name="employmentType"
+                type="text"
+                value={formData.employmentType}
+                onChange={handleChange}
+                placeholder="Employment Type (e.g., Full-time, Contract)"
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input
+                  name="bonuses"
+                  type="text"
+                  value={formData.bonuses}
+                  onChange={handleChange}
+                  placeholder="Bonuses (e.g., Sign-on bonus)"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+                <input
+                  name="benefits"
+                  type="text"
+                  value={formData.benefits}
+                  onChange={handleChange}
+                  placeholder="Benefits (e.g., Health Insurance)"
+                  className="px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  id="remote"
+                  name="remote"
+                  type="checkbox"
+                  checked={formData.remote}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 rounded focus:ring-pink-500"
+                />
+                <label htmlFor="remote" className="ml-2 block text-sm text-gray-400">
+                  This is a remote position
+                </label>
+              </div>
+
+              <div className="pt-5">
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                >
+                  Create Job Offer
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          <label htmlFor="company" className="block text-sm text-gray-400">
-            Company
-          </label>
-          <input
-            id="company"
-            name="company"
-            type="text"
-            value={formData.company}
-            onChange={handleChange}
-            required
-            placeholder="Company name"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="location" className="block text-sm text-gray-400">
-            Location
-          </label>
-          <input
-            id="location"
-            name="location"
-            type="text"
-            value={formData.location}
-            onChange={handleChange}
-            required
-            placeholder="Job location"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="description" className="block text-sm text-gray-400">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Job description"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="salaryMin" className="block text-sm text-gray-400">
-            Salary Min
-          </label>
-          <input
-            id="salaryMin"
-            name="salaryMin"
-            type="number"
-            value={formData.salaryMin}
-            onChange={handleChange}
-            placeholder="Minimum salary"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="salaryMax" className="block text-sm text-gray-400">
-            Salary Max
-          </label>
-          <input
-            id="salaryMax"
-            name="salaryMax"
-            type="number"
-            value={formData.salaryMax}
-            onChange={handleChange}
-            placeholder="Maximum salary"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="employmentType"
-            className="block text-sm text-gray-400"
-          >
-            Employment Type
-          </label>
-          <input
-            id="employmentType"
-            name="employmentType"
-            type="text"
-            value={formData.employmentType}
-            onChange={handleChange}
-            placeholder="e.g., Full-time, Part-time"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div className="flex items-center">
-          <input
-            id="remote"
-            name="remote"
-            type="checkbox"
-            checked={formData.remote}
-            onChange={handleChange}
-            className="h-4 w-4 appearance-none border text-purple-500 checked:border-purple-500 hover:border-purple-500 border-white rounded bg-transparent"
-          />
-          <label htmlFor="remote" className="ml-2 text-sm text-gray-400">
-            Remote Job
-          </label>
-        </div>
-        <div>
-          <label htmlFor="bonuses" className="block text-sm text-gray-400">
-            Bonuses
-          </label>
-          <input
-            id="bonuses"
-            name="bonuses"
-            type="text"
-            value={formData.bonuses}
-            onChange={handleChange}
-            placeholder="e.g., Sign-on bonus: $5000"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="benefits" className="block text-sm text-gray-400">
-            Benefits
-          </label>
-          <input
-            id="benefits"
-            name="benefits"
-            type="text"
-            value={formData.benefits}
-            onChange={handleChange}
-            placeholder="e.g., Health insurance, 401k"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
-        >
-          Create Job Offer
-        </button>
-      </form>
-    </AuthLayout>
+      </main>
+      <Footer />
+    </div>
   );
 };
 

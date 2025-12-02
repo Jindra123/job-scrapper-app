@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useContext, useState } from "react";
 import AppContext from "@/components/AppContext";
 
@@ -30,75 +29,68 @@ const Searchbar = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <Image
-        className="dark:invert mx-auto"
-        src="/next.svg"
-        alt="Next.js logo"
-        width={180}
-        height={38}
-        priority
-      />
-      <form onSubmit={handleSearch} className="mt-8 space-y-4">
-        <div className="flex px-4 py-3 rounded-md border-2 border-[#f2f2f2] overflow-hidden">
+    <div className="max-w-xl mx-auto my-10 p-4">
+      <h1 className="text-3xl font-bold text-center text-pink-500 mb-2">
+        Find Your Next Opportunity
+      </h1>
+      <p className="text-center text-gray-400 mb-8">
+        Search for jobs from all over the web.
+      </p>
+      <form
+        onSubmit={handleSearch}
+        className="bg-transparent shadow-2xl rounded-full p-2"
+      >
+        <div className="flex items-center">
           <input
             type="text"
-            placeholder="Search Something..."
-            className="w-full outline-none bg-transparent text-[#f2f2f2] text-sm rounded-full"
+            placeholder="Search for a job title, company, or keyword..."
+            className="w-full bg-transparent text-white placeholder-gray-400 px-4 py-2 focus:outline-none"
             value={query.name}
             onChange={(e) => setQuery({ name: e.target.value })}
           />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 192.904 192.904"
-            width="16px"
-            className="fill-[#f2f2f2]"
+          <button
+            type="submit"
+            className="bg-pink-600 text-white rounded-full px-6 py-2 hover:bg-pink-700 transition-colors duration-300"
           >
-            <path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z"></path>
-          </svg>
+            Search
+          </button>
         </div>
-        <div className="flex gap-4 justify-center text-sm text-gray-400">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="source"
-              value="all"
-              checked={sourceFilter === "all"}
-              onChange={() => setSourceFilter("all")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
-            All Jobs
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="source"
-              value="website"
-              checked={sourceFilter === "website"}
-              onChange={() => setSourceFilter("website")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
-            Website Jobs
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="source"
-              value="scraped"
-              checked={sourceFilter === "scraped"}
-              onChange={() => setSourceFilter("scraped")}
-              className="mr-2 text-purple-600 focus:ring-purple-500 border-gray-700"
-            />
-            Scraped Jobs
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="w-full px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full"
-        >
-          Search
-        </button>
       </form>
+      <div className="flex justify-center gap-6 mt-4 text-sm text-gray-400">
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            name="source"
+            value="all"
+            checked={sourceFilter === "all"}
+            onChange={() => setSourceFilter("all")}
+            className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
+          />
+          <span className="ml-2">All Jobs</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            name="source"
+            value="website"
+            checked={sourceFilter === "website"}
+            onChange={() => setSourceFilter("website")}
+            className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
+          />
+          <span className="ml-2">From Website</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            name="source"
+            value="scraped"
+            checked={sourceFilter === "scraped"}
+            onChange={() => setSourceFilter("scraped")}
+            className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
+          />
+          <span className="ml-2">Scraped</span>
+        </label>
+      </div>
     </div>
   );
 };

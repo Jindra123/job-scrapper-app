@@ -1,15 +1,13 @@
 import Footer from "@/components/Footer";
-import Searchbar from "@/components/Searchbar";
-import JobsScrollGrid from "@/components/JobsScrollGrid";
+import JobSearch from "@/components/JobSearch";
 import Navbar from "@/components/Navbar";
 
 const Home = async () => {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="min-h-screen bg-background text-white">
       <Navbar />
-      <main className="flex flex-col gap-8 row-start-2 items-center">
-        <Searchbar />
-        <JobsScrollGrid />
+      <main className="container mx-auto px-4">
+        <JobSearch />
       </main>
       <Footer />
     </div>

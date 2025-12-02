@@ -20,11 +20,9 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
 
   useEffect(() => {
     const storedJobs = localStorage.getItem("listOfJobs");
-    if (storedJobs) {
+    if (storedJobs && storedJobs !== "[]") {
       try {
         const parsedJobs = JSON.parse(storedJobs);
-
-        // Type check before setting the state to avoid potential issues
         if (
           Array.isArray(parsedJobs) &&
           parsedJobs.every((job) => typeof job === "object" && job !== null)
@@ -40,6 +38,28 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
         console.error("Error parsing listOfJobs from localStorage:", error);
         localStorage.removeItem("listOfJobs");
       }
+    } else {
+      // If no jobs in localStorage, fetch initial jobs
+      const fetchInitialJobs = async () => {
+        try {
+          const res = await fetch("/api/jobs/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: "", source: "all" }),
+          });
+
+          if (!res.ok) {
+            throw new Error("Initial job fetch failed");
+          }
+
+          const data = await res.json();
+          setListOfJobs(data.jobs);
+        } catch (error) {
+          console.error("Error fetching initial jobs:", error);
+        }
+      };
+
+      fetchInitialJobs();
     }
   }, []);
 

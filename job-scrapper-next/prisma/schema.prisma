@@ -20,6 +20,11 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  resumeUrl     String?
+  summary       String?
+  linkedinUrl   String?
+  githubUrl     String?
+  websiteUrl    String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
@@ -32,6 +37,7 @@ model Company {
   email         String    @unique
   password      String?
   ico           String?
+  logoUrl       String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   jobs          Job[]
@@ -48,7 +54,6 @@ enum JobStatus {
 model Job {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   title         String
-  company       String
   location      String
   url           String?
   status        JobStatus @default(PENDING)
@@ -71,10 +76,10 @@ model Job {
   expiresDate   DateTime?
   source        String    @default("website")
   category      String?
-  creator       Company?  @relation(fields: [creatorId], references: [id])
-  creatorId     String?
+  creator       Company   @relation(fields: [creatorId], references: [id])
+  creatorId     String
 
-  @@unique([title, company, location])
+  @@unique([title, creatorId, location])
 }
 
 model Account {

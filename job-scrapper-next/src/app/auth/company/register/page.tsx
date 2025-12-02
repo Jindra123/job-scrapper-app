@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AuthLayout from "@/components/AuthLayout";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function CompanyRegisterPage() {
   const [email, setEmail] = useState("");
@@ -24,95 +26,93 @@ export default function CompanyRegisterPage() {
       });
 
       if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error || "Registration failed");
+        const { error: resError } = await res.json();
+        throw new Error(resError || "Registration failed");
       }
 
       router.push("/auth/signin");
-    } catch {
-      setError("An error occurred");
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
     }
   };
 
   return (
-    <AuthLayout
-      title="Register as Company"
-      subheading="Post Job Opportunities"
-      footerText="Already have an account?"
-      footerLinkText="Sign in"
-      footerLinkHref="/auth/signin"
-      error={error}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm text-gray-400">
-            Company Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            placeholder="Enter company name"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
+    <div className="min-h-screen text-white">
+      <Navbar />
+      <main className="max-w-md mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-20">
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-pink-500 text-center">
+              Register Your Company
+            </h1>
+            <p className="text-sm text-gray-400 text-center mb-8">
+              Start posting job opportunities today.
+            </p>
+
+            {error && (
+              <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-md my-4">
+                <p>{error}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Company Name"
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Company Email"
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Password"
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+              <input
+                id="ico"
+                type="text"
+                value={ico}
+                onChange={(e) => setIco(e.target.value)}
+                required
+                placeholder="IČO (Company ID)"
+                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+              />
+              <button
+                type="submit"
+                className="w-full py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+              >
+                Register Company
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-400">
+              Already have an account?{" "}
+              <Link
+                href="/auth/signin"
+                className="font-medium text-pink-500 hover:text-pink-400"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
-        <div>
-          <label htmlFor="email" className="block text-sm text-gray-400">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="Enter company email"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm text-gray-400">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter password"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <div>
-          <label htmlFor="ico" className="block text-sm text-gray-400">
-            IČO (Company ID)
-          </label>
-          <input
-            id="ico"
-            type="text"
-            value={ico}
-            onChange={(e) => setIco(e.target.value)}
-            required
-            placeholder="Enter IČO (e.g., 12345678)"
-            className="mt-1 block w-full outline-none bg-transparent text-[#f2f2f2] text-sm border-b border-gray-700 py-2 focus:border-purple-500"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300"
-        >
-          Register Company
-        </button>
-      </form>
-      <p className="mt-4 text-center text-sm text-gray-400">
-        Looking for jobs?{" "}
-        <a href="/auth/register" className="text-blue-400 hover:underline">
-          Register as Job Seeker
-        </a>
-      </p>
-    </AuthLayout>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const prisma = new PrismaClient();
 
@@ -10,105 +12,83 @@ interface JobDetailPageProps {
 }
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
+  if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
+    notFound();
+  }
+
   const job = await prisma.job.findUnique({
     where: { id: params.id },
+    include: { creator: true },
   });
 
   if (!job) {
     notFound();
   }
 
-  // Placeholder for company logo (replace with actual URL or fetch logic)
-  const logoUrl = "/placeholder-logo.png"; // Add a static logo or fetch from job.company
+  const companyLogo = job.creator?.logoUrl || "/placeholder-logo.svg";
 
   return (
     <div className="min-h-screen text-white">
-      <div className="container mx-auto p-6">
-        {/* Back Link */}
-        <Link
-          href="/"
-          className="text-blue-400 hover:underline mb-6 inline-block"
-        >
-          ← Back to Jobs
-        </Link>
+      <Navbar />
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+          >
+            ← Back to Jobs
+          </Link>
+        </div>
 
-        {/* Header Section */}
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-pink-500 flex items-center">
-              {job.title}
-            </h1>
-            <p className="text-lg text-gray-400 mt-2">
-              {job.salaryMin && job.salaryMax
-                ? `${job.salaryMin} - ${job.salaryMax} ${job.currency}`
-                : "Salary TBD"}{" "}
-              • {job.experience || "Experience TBD"} • Posted:{" "}
-              {job.postedDate?.toDateString() || "N/A"}
-            </p>
-          </div>
-          <div className="w-1/4 text-right">
-            <Image
-              src={logoUrl}
-              alt={`${job.company} logo`}
-              width={100}
-              height={100}
-              className="rounded-full object-contain"
-            />
-            <p className="text-xl font-semibold text-gray-200 mt-2">
-              {job.company}
-            </p>
+        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10">
+          <div className="p-6 md:flex md:items-center md:space-x-6">
+            <div className="md:flex-shrink-0">
+              <Image
+                src={companyLogo}
+                alt={`${job.creator.name} logo`}
+                width={100}
+                height={100}
+                className="rounded-full object-contain mx-auto"
+              />
+            </div>
+            <div className="mt-4 md:mt-0 text-center md:text-left">
+              <h1 className="text-3xl font-bold text-pink-500">{job.title}</h1>
+              <Link href={`/company/${job.creator.id}`}>
+                <p className="text-xl font-semibold text-gray-300 hover:underline">
+                  {job.creator.name}
+                </p>
+              </Link>
+              <p className="text-md text-gray-400 mt-2">
+                {job.salaryMin && job.salaryMax
+                  ? `${job.salaryMin} - ${job.salaryMax} ${job.currency}`
+                  : "Salary not specified"}{" "}
+                | {job.experience || "N/A"} |{" "}
+                {job.postedDate?.toLocaleDateString() || "N/A"}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-3 gap-8">
-          {/* Description */}
-          <div className="col-span-2">
-            <section className="mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+          <div className="md:col-span-2 bg-transparent shadow-2xl rounded-lg p-6">
+            <section>
               <h2 className="text-2xl font-semibold text-pink-500 mb-4">
-                About the Job
+                Job Description
               </h2>
               <p className="text-gray-400 leading-relaxed">
-                {job.description ||
-                  "Hello! We’re looking for a passionate individual to join our dynamic team. This role offers a chance to make an impact every day while working in a supportive environment."}
+                {job.description || "No description provided."}
               </p>
             </section>
-
-            {/* Additional Details */}
-            <section className="mb-6">
+            <section className="mt-6">
               <h2 className="text-2xl font-semibold text-pink-500 mb-4">
-                Details
+                Requirements
               </h2>
-              <div className="space-y-2 text-gray-400">
-                {job.requirements && (
-                  <p>
-                    <strong className="text-gray-200">Requirements:</strong>{" "}
-                    {job.requirements}
-                  </p>
-                )}
-                {job.responsibilities && (
-                  <p>
-                    <strong className="text-gray-200">Responsibilities:</strong>{" "}
-                    {job.responsibilities}
-                  </p>
-                )}
-                {job.bonuses && (
-                  <p>
-                    <strong className="text-gray-200">Bonuses:</strong>{" "}
-                    {job.bonuses}
-                  </p>
-                )}
-                {job.benefits && (
-                  <p>
-                    <strong className="text-gray-200">Benefits:</strong>{" "}
-                    {job.benefits}
-                  </p>
-                )}
-              </div>
+              <p className="text-gray-400 leading-relaxed">
+                {job.requirements || "No requirements listed."}
+              </p>
             </section>
-
             {job.skills.length > 0 && (
-              <section className="mb-6">
+              <section className="mt-6">
                 <h2 className="text-2xl font-semibold text-pink-500 mb-4">
                   Skills
                 </h2>
@@ -116,7 +96,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   {job.skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-500 text-white px-3 py-1 rounded-full text-sm"
+                      className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm"
                     >
                       {skill}
                     </span>
@@ -125,55 +105,57 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               </section>
             )}
           </div>
-
-          {/* Sidebar */}
-          <div className="col-span-1">
-            <section className="bg-transparent p-4  rounded-lg shadow-md sticky top-6">
+          <div className="md:col-span-1">
+            <div className="bg-transparent shadow-2xl rounded-lg p-6 sticky top-8">
               <h2 className="text-xl font-semibold text-pink-500 mb-4">
                 Job Overview
               </h2>
               <div className="space-y-3 text-gray-400">
                 <p>
-                  <strong className="text-gray-200">Location:</strong>{" "}
-                  {job.location || "Remote"}
+                  <strong>Location:</strong> {job.location || "Remote"}
                 </p>
                 <p>
-                  <strong className="text-gray-200">Type:</strong>{" "}
-                  {job.employmentType || "Full-time"}
+                  <strong>Type:</strong> {job.employmentType || "Full-time"}
                 </p>
                 <p>
-                  <strong className="text-gray-200">Remote:</strong>{" "}
-                  {job.remote ? "Yes" : "No"}
+                  <strong>Remote:</strong> {job.remote ? "Yes" : "No"}
                 </p>
                 <p>
-                  <strong className="text-gray-200">Expires:</strong>{" "}
-                  {job.expiresDate?.toDateString() || "N/A"}
-                </p>
-                <p>
-                  <strong className="text-gray-200">Source:</strong>{" "}
-                  {job.source || "Website"}
+                  <strong>Source:</strong> {job.source || "Direct"}
                 </p>
               </div>
               <a
                 href={job.url || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 w-full bg-orange-600 text-white py-3 px-4 rounded-md hover:bg-orange-700 transition text-center block"
+                className="mt-6 block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
               >
                 Apply Now
               </a>
-            </section>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
 
 export async function generateMetadata({ params }: JobDetailPageProps) {
-  const job = await prisma.job.findUnique({ where: { id: params.id } });
+  if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
+    return {
+      title: "Job Not Found",
+      description: "The requested job could not be found.",
+    };
+  }
+
+  const job = await prisma.job.findUnique({
+    where: { id: params.id },
+    include: { creator: true },
+  });
+
   return {
-    title: job?.title || "Job Not Found",
-    description: job?.description || "Job details",
+    title: `${job?.title || "Job Details"} at ${job?.creator.name || "a company"}`,
+    description: job?.description?.slice(0, 150) || "View job details.",
   };
 }

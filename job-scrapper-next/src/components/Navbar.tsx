@@ -1,12 +1,11 @@
-"use server";
+"use client";
 
 import SignOutButton from "@/components/buttons/SignOutButton";
-import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-const Navbar = async () => {
-  const session = await auth();
-  console.log(session);
+const Navbar = () => {
+  const { data: session } = useSession();
 
   return (
     <header className="w-full max-w-5xl mx-auto">
@@ -18,11 +17,22 @@ const Navbar = async () => {
               <span className="text-white text-sm font-medium">
                 {session.user.email}
               </span>
-              <Link href="/jobs/create">
-                <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
-                  Create new job offer
-                </button>
-              </Link>
+              {/* @ts-ignore */}
+              {session.user.type === "company" && (
+                <Link href="/jobs/create">
+                  <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
+                    Create new job offer
+                  </button>
+                </Link>
+              )}
+              {/* @ts-ignore */}
+              {session.user.type === "user" && (
+                <Link href="/user-info">
+                  <button className="px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full">
+                    My Profile
+                  </button>
+                </Link>
+              )}
               <SignOutButton />
             </>
           ) : (

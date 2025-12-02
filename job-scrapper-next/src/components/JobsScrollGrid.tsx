@@ -21,7 +21,7 @@ const JobsScrollGrid: React.FC = () => {
       {listOfJobs.map((job, index) => (
         <Link key={index} href={`/jobs/${job.id}`} className="block">
           <JobListingCard
-            company={job.company}
+            company={job.creator?.name || ''}
             location={job.location}
             title={job.title}
           />
