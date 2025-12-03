@@ -5,6 +5,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ApplyJobButton from "@/components/ApplyJobButton";
+import { auth } from "@/auth"; // Import server-side auth helper
 
 const prisma = new PrismaClient();
 
@@ -17,6 +18,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     notFound();
   }
 
+  const session = await auth(); // Get session on the server
+
   const job = await prisma.job.findUnique({
     where: { id: params.id },
     include: { creator: true },
@@ -27,6 +30,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   const companyLogo = job.creator?.logoUrl || "/placeholder-logo.svg";
+
+  // @ts-ignore
+  const isOwner = session?.user?.type === "company" && session?.user?.id === job.creatorId;
 
   return (
     <div className="min-h-screen text-white">
@@ -125,7 +131,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   <strong>Source:</strong> {job.source || "Direct"}
                 </p>
               </div>
-              <ApplyJobButton jobId={job.id} />
+              <div className="mt-6 space-y-4">
+                {isOwner ? (
+                  <Link
+                    href={`/jobs/edit/${job.id}`}
+                    className="block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Edit Job
+                  </Link>
+                ) : (
+                  <ApplyJobButton jobId={job.id} />
+                )}
+              </div>
             </div>
           </div>
         </div>

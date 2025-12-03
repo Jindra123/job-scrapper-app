@@ -21,19 +21,33 @@ const Navbar = () => {
               </span>
               {/* @ts-ignore */}
               {session.user.type === "company" && (
-                <Link href="/jobs/create">
-                  <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
-                    Create new job offer
-                  </button>
-                </Link>
+                <>
+                  <Link href="/company/dashboard">
+                    <button className="px-4 py-2 border border-solid border-blue-500/[.8] text-white transition-colors hover:bg-blue-200 hover:text-blue-900 rounded-full">
+                      Dashboard
+                    </button>
+                  </Link>
+                  <Link href="/jobs/create">
+                    <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
+                      Create new job offer
+                    </button>
+                  </Link>
+                </>
               )}
               {/* @ts-ignore */}
               {session.user.type === "user" && (
-                <Link href="/user-info">
-                  <button className="px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full">
-                    My Profile
-                  </button>
-                </Link>
+                <>
+                  <Link href="/my-applications">
+                    <button className="px-4 py-2 border border-solid border-purple-500/[.8] text-white transition-colors hover:bg-purple-200 hover:text-purple-900 rounded-full">
+                      My Applications
+                    </button>
+                  </Link>
+                  <Link href="/user-info">
+                    <button className="px-4 py-2 border border-solid border-orange-500/[.8] text-white transition-colors hover:bg-orange-200 hover:text-orange-900 rounded-full">
+                      My Profile
+                    </button>
+                  </Link>
+                </>
               )}
               <SignOutButton />
             </>
