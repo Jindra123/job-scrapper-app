@@ -4,6 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ApplyJobButton from "@/components/ApplyJobButton";
+import { auth } from "@/auth"; // Import server-side auth helper
+import React from "react"; // Import React to use React.use
 
 const prisma = new PrismaClient();
 
@@ -11,10 +14,14 @@ interface JobDetailPageProps {
   params: { id: string };
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params: paramsPromise }: JobDetailPageProps) {
+  const params = await React.use(paramsPromise); // Unwrap params
+  
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     notFound();
   }
+
+  const session = await auth(); // Get session on the server
 
   const job = await prisma.job.findUnique({
     where: { id: params.id },
@@ -26,6 +33,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   }
 
   const companyLogo = job.creator?.logoUrl || "/placeholder-logo.svg";
+
+  // @ts-ignore
+  const isOwner = session?.user?.type === "company" && session?.user?.id === job.creatorId;
 
   return (
     <div className="min-h-screen text-white">
@@ -112,26 +122,33 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               </h2>
               <div className="space-y-3 text-gray-400">
                 <p>
-                  <strong>Location:</strong> {job.location || "Remote"}
+                  <strong>Location:</strong> {job.location}
                 </p>
                 <p>
-                  <strong>Type:</strong> {job.employmentType || "Full-time"}
+                  <strong>Type:</strong> {job.employmentType || "N/A"}
                 </p>
                 <p>
-                  <strong>Remote:</strong> {job.remote ? "Yes" : "No"}
+                  <strong>Experience:</strong> {job.experience || "N/A"}
                 </p>
                 <p>
-                  <strong>Source:</strong> {job.source || "Direct"}
+                  <strong>Remote:</strong> {job.remoteStatus || "N/A"}
+                </p>
+                <p>
+                  <strong>Sponsorship:</strong> {job.sponsorshipAvailable ? "Available" : "Not Available"}
                 </p>
               </div>
-              <a
-                href={job.url || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-              >
-                Apply Now
-              </a>
+              <div className="mt-6 space-y-4">
+                {isOwner ? (
+                  <Link
+                    href={`/jobs/edit/${job.id}`}
+                    className="block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Edit Job
+                  </Link>
+                ) : (
+                  <ApplyJobButton jobId={job.id} />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -141,7 +158,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   );
 }
 
-export async function generateMetadata({ params }: JobDetailPageProps) {
+export async function generateMetadata({ params: paramsPromise }: JobDetailPageProps) {
+  const params = await React.use(paramsPromise); // Unwrap params
+  
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     return {
       title: "Job Not Found",
@@ -159,3 +178,4 @@ export async function generateMetadata({ params }: JobDetailPageProps) {
     description: job?.description?.slice(0, 150) || "View job details.",
   };
 }
+

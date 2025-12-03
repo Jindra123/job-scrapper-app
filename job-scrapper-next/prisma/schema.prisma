@@ -1,5 +1,5 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it in the docs: https://pris.lyd/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
@@ -29,6 +29,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  applications  Application[]
 }
 
 model Company {
@@ -38,6 +39,8 @@ model Company {
   password      String?
   ico           String?
   logoUrl       String?
+  industry      String?   // New field
+  companySize   String?   // New field
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   jobs          Job[]
@@ -51,35 +54,82 @@ enum JobStatus {
   CLOSED
 }
 
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+// New Enums
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
+
+enum ExperienceLevel {
+  ENTRY
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+  PRINCIPAL
+}
+
+enum RemoteStatus {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+
 model Job {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  location      String
-  url           String?
-  status        JobStatus @default(PENDING)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  description   String?
-  salaryMin     Float?
-  salaryMax     Float?
-  salaryType    String?   @default("monthly")
-  currency      String?   @default("CZK")
-  experience    String?
-  employmentType String?
-  remote        Boolean?  @default(false)
-  bonuses       String?
-  benefits      String?
-  requirements  String?
-  responsibilities String?
-  skills        String[]
-  postedDate    DateTime? @default(now())
-  expiresDate   DateTime?
-  source        String    @default("website")
-  category      String?
-  creator       Company   @relation(fields: [creatorId], references: [id])
-  creatorId     String
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  title                String
+  location             String
+  url                  String?
+  status               JobStatus @default(PENDING)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  description          String?
+  salaryMin            Float?
+  salaryMax            Float?
+  salaryType           String?   @default("monthly")
+  currency             String?   @default("CZK")
+  experience           ExperienceLevel? // Changed to Enum
+  employmentType       EmploymentType?  // Changed to Enum
+  remoteStatus         RemoteStatus?    // Changed from remote
+  sponsorshipAvailable Boolean?         // New field
+  bonuses              String?
+  benefits             String?
+  requirements         String?
+  responsibilities     String?
+  skills               String[]
+  postedDate           DateTime? @default(now())
+  expiresDate          DateTime?
+  source               String    @default("website")
+  category             String?
+  creator              Company   @relation(fields: [creatorId], references: [id])
+  creatorId            String
+  applications         Application[]
 
   @@unique([title, creatorId, location])
+}
+
+model Application {
+  id            String          @id @default(uuid()) @map("_id")
+  userId        String
+  jobId         String          @db.ObjectId
+  resumeUrl     String?
+  status        ApplicationStatus @default(PENDING)
+  appliedAt     DateTime        @default(now())
+  user          User            @relation(fields: [userId], references: [id])
+  job           Job             @relation(fields: [jobId], references: [id])
+
+  @@unique([userId, jobId])
 }
 
 model Account {

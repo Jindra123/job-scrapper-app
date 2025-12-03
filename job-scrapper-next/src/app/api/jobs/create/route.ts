@@ -18,17 +18,18 @@ export async function POST(req: Request) {
     description,
     salaryMin,
     salaryMax,
-    employmentType,
-    remote,
+    employmentType, // Will be an Enum value
+    remoteStatus, // Renamed from 'remote'
+    sponsorshipAvailable, // New field
     bonuses,
     benefits,
-    url, // Add url to body destructuring
-    skills, // Add skills to body destructuring
-    postedDate, // Add postedDate
-    expiresDate, // Add expiresDate
-    source, // Add source
-    category, // Add category
-    experience, // Add experience
+    url,
+    skills,
+    postedDate,
+    expiresDate,
+    source,
+    category,
+    experience, // Will be an Enum value
   } = body;
 
   if (!title || !location) {
@@ -47,7 +48,8 @@ export async function POST(req: Request) {
         salaryMin,
         salaryMax,
         employmentType,
-        remote,
+        remoteStatus,
+        sponsorshipAvailable,
         bonuses,
         benefits,
         creatorId: token.id as string,
@@ -62,7 +64,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Job created successfully", job });
-  } catch {
+  } catch (e) {
+    console.error(e);
     return NextResponse.json(
       { error: "Failed to create job" },
       { status: 500 },

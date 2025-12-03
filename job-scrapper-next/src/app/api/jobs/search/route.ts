@@ -6,19 +6,38 @@ type JobWhereClause = Prisma.JobWhereInput;
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { query, source } = await req.json();
+  const { query, source, location, employmentType, remoteStatus, experienceLevel } = await req.json();
 
   try {
-    const whereClause: JobWhereClause = {
-      OR: [
+    const whereClause: JobWhereClause = {};
+
+    if (query) {
+      whereClause.OR = [
         { title: { contains: query, mode: "insensitive" } },
         { creator: { name: { contains: query, mode: "insensitive" } } },
         { location: { contains: query, mode: "insensitive" } },
-      ],
-    };
+        { skills: { has: query } }
+      ];
+    }
 
-    if (source !== "all") {
-      whereClause.source = source; // Filter by source if not "all"
+    if (source && source !== "all") {
+      whereClause.source = source;
+    }
+
+    if (location) {
+      whereClause.location = { contains: location, mode: "insensitive" };
+    }
+
+    if (employmentType) {
+      whereClause.employmentType = employmentType;
+    }
+
+    if (remoteStatus) {
+      whereClause.remoteStatus = remoteStatus;
+    }
+
+    if (experienceLevel) {
+      whereClause.experience = experienceLevel;
     }
 
     const jobs = await prisma.job.findMany({
@@ -26,7 +45,9 @@ export async function POST(req: Request) {
       include: {
         creator: true, // Include company information
       },
-      //take: 100, // Limit results
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
 
     return NextResponse.json({ jobs });

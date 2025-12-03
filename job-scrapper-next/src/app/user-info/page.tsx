@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useReducer, useEffect, FormEvent } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-// Define a type for the user profile data
+// 1. Define State and Action types
 interface UserProfile {
   name?: string | null;
   email?: string | null;
@@ -19,52 +20,108 @@ interface UserProfile {
   websiteUrl?: string | null;
 }
 
+interface PageState {
+  profile: UserProfile;
+  resumeFile: File | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+type PageAction =
+  | { type: "SET_FIELD"; field: keyof UserProfile; value: string }
+  | { type: "SET_RESUME_FILE"; file: File | null }
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; payload: UserProfile }
+  | { type: "FETCH_ERROR"; payload: string }
+  | { type: "SUBMIT_START" }
+  | { type: "SUBMIT_SUCCESS"; payload: UserProfile }
+  | { type: "SUBMIT_ERROR"; payload: string };
+
+// 2. Define the reducer function
+const pageReducer = (state: PageState, action: PageAction): PageState => {
+  switch (action.type) {
+    case "SET_FIELD":
+      return {
+        ...state,
+        profile: { ...state.profile, [action.field]: action.value },
+      };
+    case "SET_RESUME_FILE":
+      return { ...state, resumeFile: action.file };
+    case "FETCH_START":
+    case "SUBMIT_START":
+      return { ...state, isLoading: true, error: null };
+    case "FETCH_SUCCESS":
+      return { ...state, isLoading: false, profile: action.payload };
+    case "SUBMIT_SUCCESS":
+      return {
+        ...state,
+        isLoading: false,
+        profile: action.payload,
+        resumeFile: null,
+      };
+    case "FETCH_ERROR":
+    case "SUBMIT_ERROR":
+      return { ...state, isLoading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+// 3. Define the initial state
+const initialState: PageState = {
+  profile: {},
+  resumeFile: null,
+  isLoading: true,
+  error: null,
+};
+
 export default function UserInfoPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
-  const [profile, setProfile] = useState<UserProfile>({});
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // 4. Use the useReducer hook
+  const [state, dispatch] = useReducer(pageReducer, initialState);
+  const { profile, resumeFile, isLoading, error } = state;
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/auth/signin");
     } else if (status === "authenticated") {
       const fetchProfile = async () => {
+        dispatch({ type: "FETCH_START" });
         try {
           const res = await fetch("/api/user/profile");
           if (!res.ok) throw new Error("Failed to fetch profile data.");
           const data = await res.json();
-          setProfile(data);
+          dispatch({ type: "FETCH_SUCCESS", payload: data });
         } catch (err: any) {
-          setError(err.message);
-        } finally {
-          setIsLoading(false);
+          dispatch({ type: "FETCH_ERROR", payload: err.message });
         }
       };
       fetchProfile();
     }
   }, [status, router]);
 
+  // 5. Update event handlers to dispatch actions
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
+    dispatch({
+      type: "SET_FIELD",
+      field: name as keyof UserProfile,
+      value,
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setResumeFile(e.target.files[0]);
-    }
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    dispatch({ type: "SET_RESUME_FILE", file });
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+    dispatch({ type: "SUBMIT_START" });
 
     const formData = new FormData();
     Object.entries(profile).forEach(([key, value]) => {
@@ -85,12 +142,10 @@ export default function UserInfoPage() {
 
       if (!res.ok) throw new Error("Failed to update profile.");
       const data = await res.json();
-      setProfile(data.user);
+      dispatch({ type: "SUBMIT_SUCCESS", payload: data.user });
       alert("Profile updated successfully!");
     } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: "SUBMIT_ERROR", payload: err.message });
     }
   };
 
@@ -104,9 +159,15 @@ export default function UserInfoPage() {
 
   if (error) {
     return (
-      <div className="text-red-500 text-center mt-10">
-        <p>Error: {error}</p>
-        <p>Please try reloading the page.</p>
+      <div className="min-h-screen text-white">
+        <Navbar />
+        <main className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+          <div className="text-red-500 text-center mt-10">
+            <p>Error: {error}</p>
+            <p>Please try reloading the page or submitting the form again.</p>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -115,6 +176,14 @@ export default function UserInfoPage() {
     <div className="min-h-screen text-white">
       <Navbar />
       <main className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+          >
+            ← Back to Jobs
+          </Link>
+        </div>
         <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10">
           <div className="p-6">
             <div className="flex items-center space-x-5">
