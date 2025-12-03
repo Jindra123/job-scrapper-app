@@ -10,7 +10,9 @@ const Navbar = () => {
   return (
     <header className="w-full max-w-5xl mx-auto">
       <nav className="flex justify-between items-center py-4 px-4">
-        <div className="text-lg font-semibold text-white">NextJobs</div>
+        <Link href="/" className="text-lg font-semibold text-white">
+          NextJobs
+        </Link>
         <div className="flex gap-4 items-center">
           {session?.user ? (
             <>
@@ -56,3 +58,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

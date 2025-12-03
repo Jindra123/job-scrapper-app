@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/components/AppContext";
-import SessionWrapper from "@/components/SessionWrapper"; // Import the new wrapper
+import SessionWrapper from "@/components/SessionWrapper";
+import { Toaster } from "react-hot-toast";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,15 +28,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SessionWrapper>
-        <AppProvider>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            {children}
-          </body>
-        </AppProvider>
-      </SessionWrapper>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <SessionWrapper>
+          <AppProvider>
+            <ErrorBoundary>
+              {children}
+              <Toaster />
+            </ErrorBoundary>
+          </AppProvider>
+        </SessionWrapper>
+      </body>
     </html>
   );
 }

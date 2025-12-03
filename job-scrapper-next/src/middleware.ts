@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const protectedRoutes = ["/user-info"];
-const companyRoutes = ["/jobs/create"];
+const companyRoutes = ["/jobs/create", "/company/applications"];
 
 export default async function middleware(req: NextRequest) {
   const session = await getToken({
@@ -19,9 +19,6 @@ export default async function middleware(req: NextRequest) {
   const isCompanyRoute = companyRoutes.some((route) =>
     pathname.startsWith(route),
   );
-
-  console.log("Middleware - Pathname:", pathname);
-  console.log("Middleware - Session:", session);
 
   if (isProtected && !session) {
     const redirectUrl = new URL("/auth/signin", req.url);
@@ -49,5 +46,8 @@ export const config = {
     "/user-info/:path*",
     "/jobs/create",
     "/jobs/create/:path*",
+    "/company/applications",
+    "/company/applications/:path*",
   ],
 };
+

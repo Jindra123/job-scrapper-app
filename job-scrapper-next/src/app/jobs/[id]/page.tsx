@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ApplyJobButton from "@/components/ApplyJobButton";
 
 const prisma = new PrismaClient();
 
@@ -124,14 +125,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   <strong>Source:</strong> {job.source || "Direct"}
                 </p>
               </div>
-              <a
-                href={job.url || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-              >
-                Apply Now
-              </a>
+              <ApplyJobButton jobId={job.id} />
             </div>
           </div>
         </div>
@@ -159,3 +153,4 @@ export async function generateMetadata({ params }: JobDetailPageProps) {
     description: job?.description?.slice(0, 150) || "View job details.",
   };
 }
+

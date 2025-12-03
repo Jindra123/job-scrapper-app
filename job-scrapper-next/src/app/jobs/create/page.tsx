@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -61,6 +62,14 @@ const CreateJobPage = () => {
     <div className="min-h-screen text-white">
       <Navbar />
       <main className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+          >
+            ← Back to Jobs
+          </Link>
+        </div>
         <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10">
           <div className="p-6">
             <h1 className="text-2xl font-bold text-pink-500 text-center">
