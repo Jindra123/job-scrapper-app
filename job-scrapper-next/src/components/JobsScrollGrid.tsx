@@ -14,16 +14,20 @@ const JobsScrollGrid: React.FC = () => {
       [&::-webkit-scrollbar-track]:rounded-full
       [&::-webkit-scrollbar-track]:bg-gray-100
       [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-thumb]:bg-gray-300
+      [&::-webkit-scrollbar-thumb]:bg-neutral-500
       dark:[&::-webkit-scrollbar-track]:bg-neutral-700
       dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
     >
       {listOfJobs.map((job, index) => (
         <Link key={index} href={`/jobs/${job.id}`} className="block">
           <JobListingCard
-            company={job.creator?.name || ''}
+            company={job.creator?.name || ""}
             location={job.location}
             title={job.title}
+            experience={job.experience}
+            salaryMin={job.salaryMin}
+            salaryMax={job.salaryMax}
+            currency={job.currency}
           />
         </Link>
       ))}

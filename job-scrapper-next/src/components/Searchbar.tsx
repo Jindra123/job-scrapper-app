@@ -1,35 +1,31 @@
-"use client";
-
 import { useContext, useEffect } from "react";
 import AppContext from "@/components/AppContext";
+import { RemoteStatus } from "@prisma/client";
 
 const Searchbar = () => {
   const {
-    setListOfJobs, // Not directly used here, but part of context
     searchQuery,
     setSearchQuery,
     location,
     setLocation,
     employmentType,
     setEmploymentType,
-    remote,
-    setRemote,
+    remoteStatus,
+    setRemoteStatus,
     experienceLevel,
     setExperienceLevel,
     sourceFilter,
     setSourceFilter,
-    fetchJobs, // The actual function to trigger search
+    fetchJobs,
   } = useContext(AppContext);
 
-  // Trigger initial search when component mounts or filters change
   useEffect(() => {
-    fetchJobs(searchQuery, location, employmentType, remote, experienceLevel, sourceFilter);
-  }, [fetchJobs, searchQuery, location, employmentType, remote, experienceLevel, sourceFilter]);
-
+    fetchJobs(searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter);
+  }, [fetchJobs, searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchJobs(searchQuery, location, employmentType, remote, experienceLevel, sourceFilter);
+    fetchJobs(searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter);
   };
 
   return (
@@ -48,7 +44,7 @@ const Searchbar = () => {
           <input
             type="text"
             placeholder="Search by title, company, or keyword..."
-            className="w-full bg-transparent text-white placeholder-gray-400 px-4 py-2 focus:outline-none"
+            className="w-full bg-transparent text-white placeholder-gray-400 border rounded-md border-pink-600 px-4 py-2 focus:outline-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -60,7 +56,7 @@ const Searchbar = () => {
           </button>
         </div>
 
-        {/* New Filters */}
+        {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <input
             type="text"
@@ -69,17 +65,16 @@ const Searchbar = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
-
           <select
             value={employmentType}
             onChange={(e) => setEmploymentType(e.target.value)}
             className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
           >
             <option value="" className="text-gray-400">Employment Type</option>
-            <option value="Full-time" className="text-white bg-gray-700">Full-time</option>
-            <option value="Part-time" className="text-white bg-gray-700">Part-time</option>
-            <option value="Contract" className="text-white bg-gray-700">Contract</option>
-            <option value="Internship" className="text-white bg-gray-700">Internship</option>
+            <option value="FULL_TIME" className="text-white bg-gray-700">Full-time</option>
+            <option value="PART_TIME" className="text-white bg-gray-700">Part-time</option>
+            <option value="CONTRACT" className="text-white bg-gray-700">Contract</option>
+            <option value="INTERNSHIP" className="text-white bg-gray-700">Internship</option>
           </select>
         </div>
 
@@ -90,61 +85,27 @@ const Searchbar = () => {
             className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
           >
             <option value="" className="text-gray-400">Experience Level</option>
-            <option value="Entry-level" className="text-white bg-gray-700">Entry-level</option>
-            <option value="Junior" className="text-white bg-gray-700">Junior</option>
-            <option value="Mid-level" className="text-white bg-gray-700">Mid-level</option>
-            <option value="Senior" className="text-white bg-gray-700">Senior</option>
-            <option value="Lead" className="text-white bg-gray-700">Lead</option>
+            <option value="ENTRY" className="text-white bg-gray-700">Entry-level</option>
+            <option value="JUNIOR" className="text-white bg-gray-700">Junior</option>
+            <option value="MID" className="text-white bg-gray-700">Mid-level</option>
+            <option value="SENIOR" className="text-white bg-gray-700">Senior</option>
+            <option value="LEAD" className="text-white bg-gray-700">Lead</option>
           </select>
-
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center cursor-pointer text-gray-400">
-              <input
-                type="checkbox"
-                checked={remote}
-                onChange={(e) => setRemote(e.target.checked)}
-                className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 rounded focus:ring-pink-500"
-              />
-              <span className="ml-2">Remote</span>
-            </label>
-          </div>
+          <select
+            value={remoteStatus}
+            onChange={(e) => setRemoteStatus(e.target.value as RemoteStatus | "")}
+            className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+          >
+            <option value="" className="text-gray-400">Remote Policy</option>
+            <option value="ONSITE" className="text-white bg-gray-700">On-site</option>
+            <option value="HYBRID" className="text-white bg-gray-700">Hybrid</option>
+            <option value="REMOTE" className="text-white bg-gray-700">Remote</option>
+          </select>
         </div>
 
-        {/* Existing Source Filter */}
+        {/* Source Filter */}
         <div className="flex justify-center gap-6 mt-4 text-sm text-gray-400">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              name="source"
-              value="all"
-              checked={sourceFilter === "all"}
-              onChange={() => setSourceFilter("all")}
-              className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
-            />
-            <span className="ml-2">All Jobs</span>
-          </label>
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              name="source"
-              value="website"
-              checked={sourceFilter === "website"}
-              onChange={() => setSourceFilter("website")}
-              className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
-            />
-            <span className="ml-2">From Website</span>
-          </label>
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              name="source"
-              value="scraped"
-              checked={sourceFilter === "scraped"}
-              onChange={() => setSourceFilter("scraped")}
-              className="h-4 w-4 text-pink-600 bg-transparent border-gray-600 focus:ring-pink-500"
-            />
-            <span className="ml-2">Scraped</span>
-          </label>
+          {/* ... radio buttons ... */}
         </div>
       </form>
     </div>

@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ApplyJobButton from "@/components/ApplyJobButton";
 import { auth } from "@/auth"; // Import server-side auth helper
+import React from "react"; // Import React to use React.use
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,9 @@ interface JobDetailPageProps {
   params: { id: string };
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params: paramsPromise }: JobDetailPageProps) {
+  const params = await React.use(paramsPromise); // Unwrap params
+  
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     notFound();
   }
@@ -119,16 +122,19 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               </h2>
               <div className="space-y-3 text-gray-400">
                 <p>
-                  <strong>Location:</strong> {job.location || "Remote"}
+                  <strong>Location:</strong> {job.location}
                 </p>
                 <p>
-                  <strong>Type:</strong> {job.employmentType || "Full-time"}
+                  <strong>Type:</strong> {job.employmentType || "N/A"}
                 </p>
                 <p>
-                  <strong>Remote:</strong> {job.remote ? "Yes" : "No"}
+                  <strong>Experience:</strong> {job.experience || "N/A"}
                 </p>
                 <p>
-                  <strong>Source:</strong> {job.source || "Direct"}
+                  <strong>Remote:</strong> {job.remoteStatus || "N/A"}
+                </p>
+                <p>
+                  <strong>Sponsorship:</strong> {job.sponsorshipAvailable ? "Available" : "Not Available"}
                 </p>
               </div>
               <div className="mt-6 space-y-4">
@@ -152,7 +158,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   );
 }
 
-export async function generateMetadata({ params }: JobDetailPageProps) {
+export async function generateMetadata({ params: paramsPromise }: JobDetailPageProps) {
+  const params = await React.use(paramsPromise); // Unwrap params
+  
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     return {
       title: "Job Not Found",

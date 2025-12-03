@@ -2,6 +2,7 @@
 
 import { createContext, useState, useEffect, useCallback } from "react";
 import { Job } from "@/types/Job";
+import { RemoteStatus } from "@prisma/client";
 
 interface AppContextType {
   listOfJobs: Job[];
@@ -10,8 +11,8 @@ interface AppContextType {
   setLocation: (location: string) => void;
   employmentType: string;
   setEmploymentType: (employmentType: string) => void;
-  remote: boolean;
-  setRemote: (remote: boolean) => void;
+  remoteStatus: RemoteStatus | "";
+  setRemoteStatus: (remoteStatus: RemoteStatus | "") => void;
   experienceLevel: string;
   setExperienceLevel: (experienceLevel: string) => void;
   searchQuery: string;
@@ -22,7 +23,7 @@ interface AppContextType {
     query?: string,
     loc?: string,
     empType?: string,
-    rem?: boolean,
+    remStatus?: RemoteStatus | "",
     expLevel?: string,
     source?: string,
   ) => Promise<void>;
@@ -35,8 +36,8 @@ const AppContext = createContext<AppContextType>({
   setLocation: () => {},
   employmentType: "",
   setEmploymentType: () => {},
-  remote: false,
-  setRemote: () => {},
+  remoteStatus: "",
+  setRemoteStatus: () => {},
   experienceLevel: "",
   setExperienceLevel: () => {},
   searchQuery: "",
@@ -52,7 +53,7 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
   const [listOfJobs, setListOfJobs] = useState<Job[]>([]);
   const [location, setLocation] = useState("");
   const [employmentType, setEmploymentType] = useState("");
-  const [remote, setRemote] = useState(false);
+  const [remoteStatus, setRemoteStatus] = useState<RemoteStatus | "">("");
   const [experienceLevel, setExperienceLevel] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState("all");
@@ -62,7 +63,7 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
       query = "",
       loc = "",
       empType = "",
-      rem = false,
+      remStatus: RemoteStatus | "" = "",
       expLevel = "",
       source = "all",
     ) => {
@@ -74,7 +75,7 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
             query,
             location: loc,
             employmentType: empType,
-            remote: rem,
+            remoteStatus: remStatus,
             experienceLevel: expLevel,
             source,
           }),
@@ -128,15 +129,15 @@ export const AppProvider: React.FC<{ children?: React.ReactNode }> = ({
         setLocation,
         employmentType,
         setEmploymentType,
-        remote,
-        setRemote,
+        remoteStatus,
+        setRemoteStatus,
         experienceLevel,
         setExperienceLevel,
         searchQuery,
         setSearchQuery,
         sourceFilter,
         setSourceFilter,
-        fetchJobs, // Add fetchJobs to the provider value
+        fetchJobs,
       }}
     >
       {children}
