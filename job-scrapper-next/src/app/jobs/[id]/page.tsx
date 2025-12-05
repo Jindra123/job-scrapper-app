@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ApplyJobButton from "@/components/ApplyJobButton";
 import { auth } from "@/auth"; // Import server-side auth helper
-import React from "react"; // Import React to use React.use
 
 const prisma = new PrismaClient();
 
@@ -14,9 +13,7 @@ interface JobDetailPageProps {
   params: { id: string };
 }
 
-export default async function JobDetailPage({ params: paramsPromise }: JobDetailPageProps) {
-  const params = await React.use(paramsPromise); // Unwrap params
-  
+export default async function JobDetailPage({ params }: JobDetailPageProps) {
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     notFound();
   }
@@ -158,9 +155,7 @@ export default async function JobDetailPage({ params: paramsPromise }: JobDetail
   );
 }
 
-export async function generateMetadata({ params: paramsPromise }: JobDetailPageProps) {
-  const params = await React.use(paramsPromise); // Unwrap params
-  
+export async function generateMetadata({ params }: JobDetailPageProps) {
   if (!/^[0-9a-fA-F]{24}$/.test(params.id)) {
     return {
       title: "Job Not Found",
@@ -178,4 +173,3 @@ export async function generateMetadata({ params: paramsPromise }: JobDetailPageP
     description: job?.description?.slice(0, 150) || "View job details.",
   };
 }
-

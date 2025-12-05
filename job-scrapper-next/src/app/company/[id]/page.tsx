@@ -5,7 +5,6 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import JobListingCard from "@/components/JobListingCard";
-import React from "react"; // Import React to use React.use
 
 const prisma = new PrismaClient();
 
@@ -14,10 +13,8 @@ interface CompanyDetailPageProps {
 }
 
 export default async function CompanyDetailPage({
-  params: paramsPromise, // Rename params to paramsPromise
+  params,
 }: CompanyDetailPageProps) {
-  const params = await React.use(paramsPromise); // Unwrap params
-  
   const company = await prisma.company.findUnique({
     where: { id: params.id },
     include: { jobs: true }, // Include jobs posted by this company
@@ -96,8 +93,7 @@ export default async function CompanyDetailPage({
   );
 }
 
-export async function generateMetadata({ params: paramsPromise }: CompanyDetailPageProps) {
-  const params = await React.use(paramsPromise); // Unwrap params
+export async function generateMetadata({ params }: CompanyDetailPageProps) {
   const company = await prisma.company.findUnique({
     where: { id: params.id },
   });

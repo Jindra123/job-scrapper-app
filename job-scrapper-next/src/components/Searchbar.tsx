@@ -1,4 +1,6 @@
-import { useContext, useEffect } from "react";
+"use client";
+
+import { useContext } from "react";
 import AppContext from "@/components/AppContext";
 import { RemoteStatus } from "@prisma/client";
 
@@ -19,13 +21,9 @@ const Searchbar = () => {
     fetchJobs,
   } = useContext(AppContext);
 
-  useEffect(() => {
-    fetchJobs(searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter);
-  }, [fetchJobs, searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchJobs(searchQuery, location, employmentType, remoteStatus, experienceLevel, sourceFilter);
+    fetchJobs(1); // Always fetch the first page for a new search
   };
 
   return (

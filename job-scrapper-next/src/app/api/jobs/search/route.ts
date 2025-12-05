@@ -6,7 +6,16 @@ type JobWhereClause = Prisma.JobWhereInput;
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { query, source, location, employmentType, remoteStatus, experienceLevel } = await req.json();
+  const { 
+    query, 
+    source, 
+    location, 
+    employmentType, 
+    remoteStatus, 
+    experienceLevel,
+    page = 1, // Default to page 1
+    pageSize = 10, // Default to 10 items per page
+  } = await req.json();
 
   try {
     const whereClause: JobWhereClause = {};
@@ -39,6 +48,9 @@ export async function POST(req: Request) {
     if (experienceLevel) {
       whereClause.experience = experienceLevel;
     }
+    
+    // Get total count of jobs that match the criteria
+    const totalJobs = await prisma.job.count({ where: whereClause });
 
     const jobs = await prisma.job.findMany({
       where: whereClause,
@@ -47,10 +59,19 @@ export async function POST(req: Request) {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: pageSize,
+      skip: (page - 1) * pageSize,
     });
 
-    return NextResponse.json({ jobs });
+    const totalPages = Math.ceil(totalJobs / pageSize);
+
+    return NextResponse.json({ 
+      jobs,
+      totalPages,
+      currentPage: page,
+      totalJobs,
+    });
   } catch (error) {
     console.error("Error searching jobs:", error);
     return NextResponse.json(
