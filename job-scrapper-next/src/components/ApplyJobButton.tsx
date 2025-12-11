@@ -1,40 +1,23 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface ApplyJobButtonProps {
   jobId: string;
+  initialHasApplied: boolean;
 }
 
-export default function ApplyJobButton({ jobId }: ApplyJobButtonProps) {
+export default function ApplyJobButton({ jobId, initialHasApplied }: ApplyJobButtonProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [hasApplied, setHasApplied] = useState(false);
-  const [isApplying, setIsApplying] = useState(false);
+  const [hasApplied, setHasApplied] = useState(initialHasApplied);
+  const [isPending, startTransition] = useTransition();
 
   const isUser = session?.user?.type === "user";
   const isAuthenticated = status === "authenticated";
-
-  // Check if the user has already applied for this job
-  useEffect(() => {
-    if (isAuthenticated && isUser && jobId) {
-      const checkIfApplied = async () => {
-        try {
-          const res = await fetch(`/api/user/applications/${jobId}`);
-          if (res.ok) {
-            const data = await res.json();
-            setHasApplied(data.applied);
-          }
-        } catch (error) {
-          console.error("Failed to check application status:", error);
-        }
-      };
-      checkIfApplied();
-    }
-  }, [isAuthenticated, isUser, jobId]);
 
   const handleApply = useCallback(async () => {
     if (!isAuthenticated) {
@@ -48,28 +31,27 @@ export default function ApplyJobButton({ jobId }: ApplyJobButtonProps) {
       return;
     }
 
-    setIsApplying(true);
-    try {
-      const res = await fetch(`/api/jobs/${jobId}/apply`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/jobs/${jobId}/apply`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (res.ok) {
-        toast.success("Application submitted successfully!");
-        setHasApplied(true);
-      } else {
-        const errorData = await res.json();
-        toast.error(errorData.error || "Failed to submit application.");
+        if (res.ok) {
+          toast.success("Application submitted successfully!");
+          setHasApplied(true);
+        } else {
+          const errorData = await res.json();
+          toast.error(errorData.error || "Failed to submit application.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred.");
+        console.error("Application submission error:", error);
       }
-    } catch (error) {
-      toast.error("An unexpected error occurred.");
-      console.error("Application submission error:", error);
-    } finally {
-      setIsApplying(false);
-    }
+    });
   }, [isAuthenticated, isUser, jobId, router]);
 
   let buttonContent;
@@ -89,7 +71,7 @@ export default function ApplyJobButton({ jobId }: ApplyJobButtonProps) {
     buttonContent = "Applied!";
     buttonClass += "bg-green-600 cursor-not-allowed";
     buttonDisabled = true;
-  } else if (isApplying) {
+  } else if (isPending) {
     buttonContent = "Applying...";
     buttonClass += "bg-pink-400 cursor-not-allowed";
     buttonDisabled = true;

@@ -25,6 +25,8 @@ model User {
   linkedinUrl   String?
   githubUrl     String?
   websiteUrl    String?
+  skills        String[]  // New field
+  portfolio     String[]  // New field
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
@@ -41,6 +43,8 @@ model Company {
   logoUrl       String?
   industry      String?   // New field
   companySize   String?   // New field
+  websiteUrl    String?   // New field
+  about         String?   // New field
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   jobs          Job[]

@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.8.0",
@@ -22,7 +23,8 @@
     "puppeteer-core": "^22.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hot-toast": "^2.6.0"
+    "react-hot-toast": "^2.6.0",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

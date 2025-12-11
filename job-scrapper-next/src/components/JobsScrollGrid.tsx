@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useContext } from "react";
-import AppContext from "@/components/AppContext";
+import React from "react";
+import { useJobStore } from '@/store/job-store';
 import JobListingCard from "@/components/JobListingCard";
 import Link from "next/link";
 import PaginationControls from "./PaginationControls"; // Import the new component
 
 const JobsScrollGrid: React.FC = () => {
-  const { listOfJobs, currentPage, totalPages, fetchJobs } = useContext(AppContext);
+  const { listOfJobs, currentPage, totalPages, fetchJobs, isPending } = useJobStore();
+
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -1,13 +1,12 @@
-"use client";
-
-import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
 import { JobStatus } from "@prisma/client";
+import JobActions from "@/components/JobActions";
 
 interface DashboardJob {
   id: string;
@@ -17,67 +16,52 @@ interface DashboardJob {
   applicationCount: number;
 }
 
-export default function CompanyDashboardPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [jobs, setJobs] = useState<DashboardJob[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function getDashboardData(companyId: string): Promise<DashboardJob[]> {
+  const jobs = await prisma.job.findMany({
+    where: {
+      creatorId: companyId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/company/dashboard");
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to fetch dashboard data");
-      }
-      const data = await res.json();
-      setJobs(data.jobs || []);
-    } catch (err: any) {
-      setError(err.message);
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const jobIds = jobs.map((job) => job.id);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-      return;
-    }
+  const applicationCounts = await prisma.application.groupBy({
+    by: ["jobId"],
+    where: {
+      jobId: {
+        in: jobIds,
+      },
+    },
+    _count: {
+      id: true,
+    },
+  });
 
-    if (status === "authenticated" && session.user?.type === "company") {
-      fetchDashboardData();
-    } else if (status === "authenticated" && session.user?.type !== "company") {
-      router.push("/");
-    }
-  }, [session, status, router, fetchDashboardData]);
+  const countsMap = new Map<string, number>();
+  applicationCounts.forEach((count) => {
+    countsMap.set(count.jobId, count._count.id);
+  });
 
-  const handleToggleStatus = async (jobId: string, currentStatus: JobStatus) => {
-    const toastId = toast.loading("Updating status...");
-    try {
-      const res = await fetch(`/api/jobs/${jobId}/status`, {
-        method: "PUT",
-      });
+  const dashboardJobs = jobs.map((job) => ({
+    ...job,
+    createdAt: job.createdAt.toISOString(),
+    applicationCount: countsMap.get(job.id) || 0,
+  }));
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to update status");
-      }
+  return dashboardJobs;
+}
 
-      const { job: updatedJob } = await res.json();
-      toast.success("Status updated successfully!", { id: toastId });
-      setJobs((prevJobs) =>
-        prevJobs.map((job) =>
-          job.id === jobId ? { ...job, status: updatedJob.status } : job
-        )
-      );
-    } catch (err: any) {
-      toast.error(err.message, { id: toastId });
-    }
-  };
+export default async function CompanyDashboardPage() {
+  const session = await auth();
+
+  if (!session || session.user?.type !== "company") {
+    redirect("/auth/signin");
+  }
+
+  const jobs = await getDashboardData(session.user.id);
 
   const getStatusChipClass = (status: JobStatus) => {
     switch (status) {
@@ -91,14 +75,6 @@ export default function CompanyDashboardPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
-
-  if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading Dashboard...
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen text-white">
@@ -114,13 +90,7 @@ export default function CompanyDashboardPage() {
           </Link>
         </div>
 
-        {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-center">
-            <p>{error}</p>
-          </div>
-        )}
-
-        {!error && jobs.length === 0 ? (
+        {jobs.length === 0 ? (
           <div className="bg-transparent shadow-2xl rounded-lg p-8 text-center">
             <p className="text-gray-400">You haven't posted any jobs yet.</p>
           </div>
@@ -147,18 +117,10 @@ export default function CompanyDashboardPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center">{job.applicationCount}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{new Date(job.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <Link href={`/company/applications?jobId=${job.id}`} className="text-blue-400 hover:underline">View</Link>
-                      <Link href={`/jobs/edit/${job.id}`} className="text-purple-400 hover:underline">Edit</Link>
-                      <button 
-                        onClick={() => handleToggleStatus(job.id, job.status)}
-                        className="text-red-400 hover:underline"
-                      >
-                        {job.status === 'CLOSED' ? 'Re-open' : 'Close'}
-                      </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <JobActions jobId={job.id} initialStatus={job.status} />
                     </td>
-                  </tr>
-                ))}
+                    </tr>                ))}
               </tbody>
             </table>
           </div>

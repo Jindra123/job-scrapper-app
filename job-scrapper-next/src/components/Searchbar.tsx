@@ -1,8 +1,9 @@
 "use client";
 
-import { useContext } from "react";
-import AppContext from "@/components/AppContext";
+import { useCallback } from "react";
+import { useJobStore } from '@/store/job-store';
 import { RemoteStatus } from "@prisma/client";
+import React from "react";
 
 const Searchbar = () => {
   const {
@@ -16,15 +17,94 @@ const Searchbar = () => {
     setRemoteStatus,
     experienceLevel,
     setExperienceLevel,
-    sourceFilter,
-    setSourceFilter,
     fetchJobs,
-  } = useContext(AppContext);
+    isPending,
+    salaryMin,
+    setSalaryMin,
+    salaryMax,
+    setSalaryMax,
+    datePosted,
+    setDatePosted,
+    industry,
+    setIndustry,
+    clearFilters,
+  } = useJobStore();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetchJobs(1); // Always fetch the first page for a new search
-  };
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      fetchJobs(1); // Always fetch the first page for a new search
+    },
+    [fetchJobs],
+  );
+
+  const handleSearchQueryChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    [setSearchQuery],
+  );
+
+  const handleLocationChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setLocation(e.target.value);
+    },
+    [setLocation],
+  );
+
+  const handleEmploymentTypeChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setEmploymentType(e.target.value);
+    },
+    [setEmploymentType],
+  );
+
+  const handleExperienceLevelChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setExperienceLevel(e.target.value);
+    },
+    [setExperienceLevel],
+  );
+
+  const handleRemoteStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRemoteStatus(e.target.value as RemoteStatus | "");
+    },
+    [setRemoteStatus],
+  );
+
+  const handleSalaryMinChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSalaryMin(e.target.value);
+    },
+    [setSalaryMin],
+  );
+
+  const handleSalaryMaxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSalaryMax(e.target.value);
+    },
+    [setSalaryMax],
+  );
+
+  const handleDatePostedChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setDatePosted(e.target.value);
+    },
+    [setDatePosted],
+  );
+
+  const handleIndustryChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIndustry(e.target.value);
+    },
+    [setIndustry],
+  );
+
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+    fetchJobs(1);
+  }, [clearFilters, fetchJobs]);
 
   return (
     <div className="max-w-xl mx-auto my-10 p-4">
@@ -44,13 +124,14 @@ const Searchbar = () => {
             placeholder="Search by title, company, or keyword..."
             className="w-full bg-transparent text-white placeholder-gray-400 border rounded-md border-pink-600 px-4 py-2 focus:outline-none"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchQueryChange}
           />
           <button
             type="submit"
             className="bg-pink-600 text-white rounded-full px-6 py-2 hover:bg-pink-700 transition-colors duration-300 ml-2"
+            disabled={isPending}
           >
-            Search
+            {isPending ? "Searching..." : "Search"}
           </button>
         </div>
 
@@ -61,11 +142,11 @@ const Searchbar = () => {
             placeholder="Location (e.g., 'Prague')"
             className="w-full bg-transparent text-white placeholder-gray-400 px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={handleLocationChange}
           />
           <select
             value={employmentType}
-            onChange={(e) => setEmploymentType(e.target.value)}
+            onChange={handleEmploymentTypeChange}
             className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
           >
             <option value="" className="text-gray-400">Employment Type</option>
@@ -79,7 +160,7 @@ const Searchbar = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <select
             value={experienceLevel}
-            onChange={(e) => setExperienceLevel(e.target.value)}
+            onChange={handleExperienceLevelChange}
             className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
           >
             <option value="" className="text-gray-400">Experience Level</option>
@@ -91,7 +172,7 @@ const Searchbar = () => {
           </select>
           <select
             value={remoteStatus}
-            onChange={(e) => setRemoteStatus(e.target.value as RemoteStatus | "")}
+            onChange={handleRemoteStatusChange}
             className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
           >
             <option value="" className="text-gray-400">Remote Policy</option>
@@ -100,13 +181,59 @@ const Searchbar = () => {
             <option value="REMOTE" className="text-white bg-gray-700">Remote</option>
           </select>
         </div>
-
-        {/* Source Filter */}
-        <div className="flex justify-center gap-6 mt-4 text-sm text-gray-400">
-          {/* ... radio buttons ... */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input
+            type="number"
+            placeholder="Min Salary"
+            className="w-full bg-transparent text-white placeholder-gray-400 px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+            value={salaryMin}
+            onChange={handleSalaryMinChange}
+          />
+          <input
+            type="number"
+            placeholder="Max Salary"
+            className="w-full bg-transparent text-white placeholder-gray-400 px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+            value={salaryMax}
+            onChange={handleSalaryMaxChange}
+          />
         </div>
-      </form>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <select
+            value={datePosted}
+            onChange={handleDatePostedChange}
+            className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+          >
+            <option value="" className="text-gray-400">Date Posted</option>
+            <option value="24h" className="text-white bg-gray-700">Last 24 hours</option>
+            <option value="7d" className="text-white bg-gray-700">Last 7 days</option>
+            <option value="30d" className="text-white bg-gray-700">Last 30 days</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Industry"
+            className="w-full bg-transparent text-white placeholder-gray-400 px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+            value={industry}
+            onChange={handleIndustryChange}
+          />
+        </div>
+        <div className="flex justify-between gap-6 mt-4 text-sm text-gray-400">
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-gray-400 hover:text-white"
+          >
+            Clear Filters
+          </button>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full bg-transparent text-white px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+          >
+            <option value="date" className="text-white bg-gray-700">Sort by Date</option>
+            <option value="salary" className="text-white bg-gray-700">Sort by Salary</option>
+          </select>
+        </div>      </form>
     </div>
   );
 };
-export default Searchbar;
+export default React.memo(Searchbar);

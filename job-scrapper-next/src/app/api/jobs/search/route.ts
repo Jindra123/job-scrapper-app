@@ -13,6 +13,11 @@ export async function POST(req: Request) {
     employmentType, 
     remoteStatus, 
     experienceLevel,
+    salaryMin,
+    salaryMax,
+    datePosted,
+    industry,
+    sortBy,
     page = 1, // Default to page 1
     pageSize = 10, // Default to 10 items per page
   } = await req.json();
@@ -48,6 +53,39 @@ export async function POST(req: Request) {
     if (experienceLevel) {
       whereClause.experience = experienceLevel;
     }
+
+    if (salaryMin) {
+      whereClause.salaryMin = { gte: parseFloat(salaryMin) };
+    }
+
+    if (salaryMax) {
+      whereClause.salaryMax = { lte: parseFloat(salaryMax) };
+    }
+
+    if (datePosted) {
+      const now = new Date();
+      let dateFilter: Date;
+      if (datePosted === "24h") {
+        dateFilter = new Date(now.setDate(now.getDate() - 1));
+      } else if (datePosted === "7d") {
+        dateFilter = new Date(now.setDate(now.getDate() - 7));
+      } else if (datePosted === "30d") {
+        dateFilter = new Date(now.setMonth(now.getMonth() - 1));
+      } else {
+        dateFilter = new Date(0); // a long time ago
+      }
+      whereClause.createdAt = { gte: dateFilter };
+    }
+
+    if (industry) {
+      whereClause.creator = { industry: { contains: industry, mode: "insensitive" } };
+    }
+    
+    let orderBy: Prisma.JobOrderByWithRelationInput = { createdAt: 'desc' };
+
+    if (sortBy === 'salary') {
+      orderBy = { salaryMax: 'desc' };
+    }
     
     // Get total count of jobs that match the criteria
     const totalJobs = await prisma.job.count({ where: whereClause });
@@ -57,9 +95,7 @@ export async function POST(req: Request) {
       include: {
         creator: true, // Include company information
       },
-      orderBy: {
-        createdAt: 'desc'
-      },
+      orderBy,
       take: pageSize,
       skip: (page - 1) * pageSize,
     });

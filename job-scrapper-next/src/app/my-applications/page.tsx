@@ -1,13 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
 
 // Define interfaces for the data structure
 interface Company {
@@ -23,51 +21,39 @@ interface Job {
 }
 
 interface Application {
-  id:string;
+  id: string;
   status: "PENDING" | "REVIEWED" | "ACCEPTED" | "REJECTED";
   appliedAt: string;
   job: Job;
 }
 
-export default function MyApplicationsPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function getApplications(userId: string): Promise<Application[]> {
+  const applications = await prisma.application.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      job: {
+        include: {
+          creator: true,
+        },
+      },
+    },
+    orderBy: {
+      appliedAt: "desc",
+    },
+  });
+  return applications as Application[];
+}
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-      return;
-    }
+export default async function MyApplicationsPage() {
+  const session = await auth();
 
-    if (status === "authenticated" && session.user?.type === "user") {
-      const fetchApplications = async () => {
-        try {
-          const res = await fetch("/api/user/applications");
-          if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(
-              errorData.error || "Failed to fetch applications",
-            );
-          }
-          const data = await res.json();
-          setApplications(data.applications || []);
-        } catch (err: any) {
-          setError(err.message);
-          toast.error(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+  if (!session || session.user?.type !== "user") {
+    redirect("/auth/signin");
+  }
 
-      fetchApplications();
-    } else if (status === "authenticated" && session.user?.type !== "user") {
-      // Redirect if a non-user (e.g., company) tries to access
-      router.push("/");
-    }
-  }, [session, status, router]);
+  const applications = await getApplications(session.user.id);
 
   const getStatusChipClass = (status: Application["status"]) => {
     switch (status) {
@@ -83,14 +69,6 @@ export default function MyApplicationsPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
-
-  if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading your applications...
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen text-white">
@@ -109,13 +87,7 @@ export default function MyApplicationsPage() {
           My Applications
         </h1>
 
-        {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg text-center">
-            <p>{error}</p>
-          </div>
-        )}
-
-        {!error && applications.length === 0 ? (
+        {applications.length === 0 ? (
           <div className="bg-transparent shadow-2xl rounded-lg p-8 text-center">
             <p className="text-gray-400">
               You haven't applied to any jobs yet.

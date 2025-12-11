@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "@/components/AppContext";
 import SessionWrapper from "@/components/SessionWrapper";
 import { Toaster } from "react-hot-toast";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -32,12 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionWrapper>
-          <AppProvider>
-            <ErrorBoundary>
-              {children}
-              <Toaster />
-            </ErrorBoundary>
-          </AppProvider>
+          <ErrorBoundary>
+            {children}
+            <Toaster />
+          </ErrorBoundary>
         </SessionWrapper>
       </body>
     </html>

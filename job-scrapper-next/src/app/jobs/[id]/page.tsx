@@ -29,9 +29,17 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     notFound();
   }
 
+  const hasApplied = session?.user?.id
+    ? (await prisma.application.count({
+        where: {
+          userId: session.user.id,
+          jobId: job.id,
+        },
+      })) > 0
+    : false;
+
   const companyLogo = job.creator?.logoUrl || "/placeholder-logo.svg";
 
-  // @ts-ignore
   const isOwner = session?.user?.type === "company" && session?.user?.id === job.creatorId;
 
   return (
@@ -143,7 +151,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                     Edit Job
                   </Link>
                 ) : (
-                  <ApplyJobButton jobId={job.id} />
+                  <ApplyJobButton jobId={job.id} initialHasApplied={hasApplied} />
                 )}
               </div>
             </div>
