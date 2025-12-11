@@ -11,23 +11,15 @@ const JobsScrollGrid: React.FC = () => {
 
   if (isPending) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pink-500"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <>
-      <div
-        className="overflow-y-scroll overflow-x-hidden grid grid-cols-1 max-h-[50vh] width mb-10 gap-4 [&::-webkit-scrollbar]:w-2
-        [&::-webkit-scrollbar-track]:rounded-full
-        [&::-webkit-scrollbar-track]:bg-gray-100
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb]:bg-neutral-500
-        dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-        dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
-      >
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 gap-4">
         {listOfJobs.map((job, index) => (
           <Link key={index} href={`/jobs/${job.id}`} className="block">
             <JobListingCard
@@ -47,7 +39,7 @@ const JobsScrollGrid: React.FC = () => {
         totalPages={totalPages}
         onPageChange={fetchJobs}
       />
-    </>
+    </div>
   );
 };
 

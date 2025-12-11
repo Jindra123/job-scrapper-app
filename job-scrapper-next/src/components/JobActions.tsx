@@ -15,6 +15,8 @@ export default function JobActions({ jobId, initialStatus }: JobActionsProps) {
   const router = useRouter();
   const [status, setStatus] = useState(initialStatus);
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, setIsDeleting] = useState(false);
+
 
   const handleToggleStatus = async () => {
     startTransition(async () => {
@@ -40,6 +42,7 @@ export default function JobActions({ jobId, initialStatus }: JobActionsProps) {
   };
 
   const handleDelete = async () => {
+    setIsDeleting(true);
     const toastId = toast.loading("Deleting job...");
     try {
       const res = await fetch(`/api/jobs/${jobId}`, {
@@ -55,25 +58,28 @@ export default function JobActions({ jobId, initialStatus }: JobActionsProps) {
       router.refresh();
     } catch (err: any) {
       toast.error(err.message, { id: toastId });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="space-x-2">
-      <Link href={`/company/applications?jobId=${jobId}`} className="text-blue-400 hover:underline">View</Link>
-      <Link href={`/jobs/edit/${jobId}`} className="text-purple-400 hover:underline">Edit</Link>
+    <div className="flex items-center space-x-2">
+      <Link href={`/company/applications?jobId=${jobId}`} className="text-primary hover:underline dark:text-primary-light">View</Link>
+      <Link href={`/jobs/edit/${jobId}`} className="text-primary hover:underline dark:text-primary-light">Edit</Link>
       <button
         onClick={handleToggleStatus}
-        className="text-red-400 hover:underline"
+        className="text-primary hover:underline dark:text-primary-light"
         disabled={isPending}
       >
         {isPending ? "Updating..." : status === "CLOSED" ? "Re-open" : "Close"}
       </button>
       <button
         onClick={handleDelete}
-        className="text-red-400 hover:underline"
+        className="text-destructive hover:underline dark:text-destructive-light"
+        disabled={isDeleting}
       >
-        Delete
+        {isDeleting ? "Deleting..." : "Delete"}
       </button>
     </div>
   );

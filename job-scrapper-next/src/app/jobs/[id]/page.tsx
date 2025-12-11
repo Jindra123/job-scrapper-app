@@ -43,19 +43,19 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const isOwner = session?.user?.type === "company" && session?.user?.id === job.creatorId;
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Navbar />
-      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-6">
           <Link
             href="/"
-            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+            className="text-primary hover:text-primary-light transition-colors duration-300"
           >
             ← Back to Jobs
           </Link>
         </div>
 
-        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden dark:bg-gray-800">
           <div className="p-6 md:flex md:items-center md:space-x-6">
             <div className="md:flex-shrink-0">
               <Image
@@ -67,13 +67,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               />
             </div>
             <div className="mt-4 md:mt-0 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-pink-500">{job.title}</h1>
+              <h1 className="text-3xl font-bold text-text dark:text-white">{job.title}</h1>
               <Link href={`/company/${job.creator.id}`}>
-                <p className="text-xl font-semibold text-gray-300 hover:underline">
+                <p className="text-xl font-semibold text-text-light dark:text-gray-300 hover:underline">
                   {job.creator.name}
                 </p>
               </Link>
-              <p className="text-md text-gray-400 mt-2">
+              <p className="text-md text-text-light dark:text-gray-400 mt-2">
                 {job.salaryMin && job.salaryMax
                   ? `${job.salaryMin} - ${job.salaryMax} ${job.currency}`
                   : "Salary not specified"}{" "}
@@ -85,33 +85,33 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          <div className="md:col-span-2 bg-transparent shadow-2xl rounded-lg p-6">
+          <div className="md:col-span-2 bg-white shadow-md rounded-lg p-6 dark:bg-gray-800">
             <section>
-              <h2 className="text-2xl font-semibold text-pink-500 mb-4">
+              <h2 className="text-2xl font-semibold text-text dark:text-white mb-4">
                 Job Description
               </h2>
-              <p className="text-gray-400 leading-relaxed">
+              <p className="text-text-light dark:text-gray-300 leading-relaxed">
                 {job.description || "No description provided."}
               </p>
             </section>
             <section className="mt-6">
-              <h2 className="text-2xl font-semibold text-pink-500 mb-4">
+              <h2 className="text-2xl font-semibold text-text dark:text-white mb-4">
                 Requirements
               </h2>
-              <p className="text-gray-400 leading-relaxed">
+              <p className="text-text-light dark:text-gray-300 leading-relaxed">
                 {job.requirements || "No requirements listed."}
               </p>
             </section>
             {job.skills.length > 0 && (
               <section className="mt-6">
-                <h2 className="text-2xl font-semibold text-pink-500 mb-4">
+                <h2 className="text-2xl font-semibold text-text dark:text-white mb-4">
                   Skills
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {job.skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm"
+                      className="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full text-sm dark:bg-opacity-20 dark:text-primary-light"
                     >
                       {skill}
                     </span>
@@ -121,11 +121,11 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             )}
           </div>
           <div className="md:col-span-1">
-            <div className="bg-transparent shadow-2xl rounded-lg p-6 sticky top-8">
-              <h2 className="text-xl font-semibold text-pink-500 mb-4">
+            <div className="bg-white shadow-md rounded-lg p-6 sticky top-8 dark:bg-gray-800">
+              <h2 className="text-xl font-semibold text-text dark:text-white mb-4">
                 Job Overview
               </h2>
-              <div className="space-y-3 text-gray-400">
+              <div className="space-y-3 text-text-light dark:text-gray-300">
                 <p>
                   <strong>Location:</strong> {job.location}
                 </p>
@@ -146,7 +146,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 {isOwner ? (
                   <Link
                     href={`/jobs/edit/${job.id}`}
-                    className="block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="block w-full text-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                   >
                     Edit Job
                   </Link>

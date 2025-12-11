@@ -37,20 +37,20 @@ export default function CompanyRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Navbar />
       <main className="max-w-md mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-20">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden mt-20 dark:bg-gray-800">
           <div className="p-8">
-            <h1 className="text-2xl font-bold text-pink-500 text-center">
+            <h1 className="text-2xl font-bold text-text text-center dark:text-white">
               Register Your Company
             </h1>
-            <p className="text-sm text-gray-400 text-center mb-8">
+            <p className="text-sm text-text-light text-center mb-8 dark:text-gray-300">
               Start posting job opportunities today.
             </p>
 
             {error && (
-              <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-md my-4">
+              <div className="bg-destructive bg-opacity-10 text-destructive px-4 py-3 rounded-md my-4">
                 <p>{error}</p>
               </div>
             )}
@@ -63,7 +63,7 @@ export default function CompanyRegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Company Name"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <input
                 id="email"
@@ -72,7 +72,7 @@ export default function CompanyRegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Company Email"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <input
                 id="password"
@@ -81,7 +81,7 @@ export default function CompanyRegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Password"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <input
                 id="ico"
@@ -90,21 +90,21 @@ export default function CompanyRegisterPage() {
                 onChange={(e) => setIco(e.target.value)}
                 required
                 placeholder="IČO (Company ID)"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <button
                 type="submit"
-                className="w-full py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 Register Company
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-gray-400">
+            <p className="mt-6 text-center text-sm text-text-light dark:text-gray-300">
               Already have an account?{" "}
               <Link
                 href="/auth/signin"
-                className="font-medium text-pink-500 hover:text-pink-400"
+                className="font-medium text-primary hover:text-primary-light"
               >
                 Sign in
               </Link>

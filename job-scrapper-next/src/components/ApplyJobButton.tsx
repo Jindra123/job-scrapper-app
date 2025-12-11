@@ -54,39 +54,28 @@ export default function ApplyJobButton({ jobId, initialHasApplied }: ApplyJobBut
     });
   }, [isAuthenticated, isUser, jobId, router]);
 
-  let buttonContent;
-  let buttonDisabled = false;
-  let buttonClass =
-    "mt-6 block w-full text-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white ";
+  const getButtonClass = () => {
+    if (!isAuthenticated || !isUser || hasApplied || isPending) {
+      return "bg-secondary text-text-light cursor-not-allowed dark:bg-gray-700 dark:text-gray-400";
+    }
+    return "bg-primary text-white hover:bg-primary-light";
+  }
 
-  if (!isAuthenticated) {
-    buttonContent = "Login to Apply";
-    buttonClass += "bg-gray-500 cursor-not-allowed";
-    buttonDisabled = true;
-  } else if (!isUser) {
-    buttonContent = "Only Job Seekers Can Apply";
-    buttonClass += "bg-gray-500 cursor-not-allowed";
-    buttonDisabled = true;
-  } else if (hasApplied) {
-    buttonContent = "Applied!";
-    buttonClass += "bg-green-600 cursor-not-allowed";
-    buttonDisabled = true;
-  } else if (isPending) {
-    buttonContent = "Applying...";
-    buttonClass += "bg-pink-400 cursor-not-allowed";
-    buttonDisabled = true;
-  } else {
-    buttonContent = "Apply Now";
-    buttonClass += "bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500";
+  const getButtonContent = () => {
+    if (!isAuthenticated) return "Login to Apply";
+    if (!isUser) return "Only Job Seekers Can Apply";
+    if (hasApplied) return "Applied!";
+    if (isPending) return "Applying...";
+    return "Apply Now";
   }
 
   return (
     <button
       onClick={handleApply}
-      disabled={buttonDisabled}
-      className={buttonClass}
+      disabled={!isAuthenticated || !isUser || hasApplied || isPending}
+      className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors ${getButtonClass()}`}
     >
-      {buttonContent}
+      {getButtonContent()}
     </button>
   );
 }

@@ -77,50 +77,51 @@ export default async function CompanyDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Toaster />
       <Navbar />
       <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-pink-500">Company Dashboard</h1>
+          <h1 className="text-3xl font-bold text-text dark:text-white">Company Dashboard</h1>
           <Link href="/jobs/create">
-            <button className="px-4 py-2 border border-solid border-green-500/[.8] text-white transition-colors hover:bg-green-200 hover:text-green-900 rounded-full">
+            <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary-light transition-colors">
               + Post New Job
             </button>
           </Link>
         </div>
 
         {jobs.length === 0 ? (
-          <div className="bg-transparent shadow-2xl rounded-lg p-8 text-center">
-            <p className="text-gray-400">You haven't posted any jobs yet.</p>
+          <div className="bg-white shadow-md rounded-lg p-8 text-center dark:bg-gray-800">
+            <p className="text-text-light dark:text-gray-300">You haven't posted any jobs yet.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto bg-transparent shadow-2xl rounded-lg">
-            <table className="min-w-full divide-y divide-gray-700">
-              <thead className="bg-gray-800">
+          <div className="overflow-x-auto bg-white shadow-md rounded-lg dark:bg-gray-800">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Job Title</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Applications</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date Posted</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-light dark:text-gray-300 uppercase tracking-wider">Job Title</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-light dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-light dark:text-gray-300 uppercase tracking-wider">Applications</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-light dark:text-gray-300 uppercase tracking-wider">Date Posted</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-light dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-gray-800">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{job.title}</td>
+                  <tr key={job.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text dark:text-white">{job.title}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusChipClass(job.status)}`}>
                         {job.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-center">{job.applicationCount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{new Date(job.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-gray-300 text-center">{job.applicationCount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-gray-300">{new Date(job.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <JobActions jobId={job.id} initialStatus={job.status} />
                     </td>
-                    </tr>                ))}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -130,3 +131,4 @@ export default async function CompanyDashboardPage() {
     </div>
   );
 }
+

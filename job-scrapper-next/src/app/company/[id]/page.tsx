@@ -25,52 +25,51 @@ export default async function CompanyDetailPage({
   }
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Navbar />
       <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-6">
           <Link
             href="/"
-            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+            className="text-primary hover:text-primary-light transition-colors duration-300"
           >
             ← Back to Jobs
           </Link>
         </div>
 
-        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-10 p-6 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden p-6 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 dark:bg-gray-800">
           <Image
             src={company.logoUrl || "/placeholder-logo.svg"}
             alt={`${company.name} logo`}
             width={120}
             height={120}
-            className="rounded-full object-cover border-4 border-pink-500"
+            className="rounded-full object-cover border-4 border-primary"
           />
           <div className="text-center md:text-left">
-            <h1 className="text-4xl font-bold text-pink-500">{company.name}</h1>
-            <p className="text-gray-400 text-lg mt-1">
+            <h1 className="text-4xl font-bold text-text dark:text-white">{company.name}</h1>
+            <p className="text-text-light dark:text-gray-300 text-lg mt-1">
               {company.email} {company.ico && `• ICO: ${company.ico}`}
             </p>
           </div>
         </div>
 
-        <section className="bg-transparent shadow-2xl rounded-lg p-6 mt-8">
-          <h2 className="text-3xl font-semibold text-pink-500 mb-4">
+        <section className="bg-white shadow-md rounded-lg p-6 mt-8 dark:bg-gray-800">
+          <h2 className="text-3xl font-semibold text-text dark:text-white mb-4">
             About {company.name}
           </h2>
-          <p className="text-gray-400 leading-relaxed">
-            {/* Placeholder description. You can add a description field to your Company model */}
-            A brief introduction to the company and its mission. This section can be populated with data from your database.
+          <p className="text-text-light dark:text-gray-300 leading-relaxed">
+            {company.about || "No description provided."}
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-3xl font-semibold text-pink-500 mb-6 text-center">
+          <h2 className="text-3xl font-semibold text-text dark:text-white mb-6 text-center">
             Open Positions at {company.name}
           </h2>
           {company.jobs.length > 0 ? (
             <div className="grid grid-cols-1 gap-y-4">
               {company.jobs.map((job) => (
-                <Link key={job.id} href={`/jobs/${job.id}`} className="block transform transition-transform duration-300 hover:scale-105">
+                <Link key={job.id} href={`/jobs/${job.id}`} className="block">
                   <JobListingCard
                     company={company.name}
                     location={job.location}
@@ -80,8 +79,8 @@ export default async function CompanyDetailPage({
               ))}
             </div>
           ) : (
-            <div className="text-center bg-transparent shadow-2xl rounded-lg p-8">
-              <p className="text-gray-400">
+            <div className="text-center bg-white shadow-md rounded-lg p-8 dark:bg-gray-800">
+              <p className="text-text-light dark:text-gray-300">
                 {company.name} has no open positions at the moment.
               </p>
             </div>

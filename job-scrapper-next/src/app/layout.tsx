@@ -4,6 +4,7 @@ import "./globals.css";
 import SessionWrapper from "@/components/SessionWrapper";
 import { Toaster } from "react-hot-toast";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,16 +27,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionWrapper>
-          <ErrorBoundary>
-            {children}
-            <Toaster />
-          </ErrorBoundary>
-        </SessionWrapper>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionWrapper>
+            <ErrorBoundary>
+              {children}
+              <Toaster />
+            </ErrorBoundary>
+          </SessionWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

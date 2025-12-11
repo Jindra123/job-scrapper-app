@@ -35,20 +35,20 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Navbar />
       <main className="max-w-md mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="bg-transparent shadow-2xl rounded-lg overflow-hidden mt-20">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden mt-20 dark:bg-gray-800">
           <div className="p-8">
-            <h1 className="text-2xl font-bold text-pink-500 text-center">
+            <h1 className="text-2xl font-bold text-text text-center dark:text-white">
               Welcome Back
             </h1>
-            <p className="text-sm text-gray-400 text-center mb-8">
+            <p className="text-sm text-text-light text-center mb-8 dark:text-gray-300">
               Sign in to access your account.
             </p>
 
             {error && (
-              <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-md my-4">
+              <div className="bg-destructive bg-opacity-10 text-destructive px-4 py-3 rounded-md my-4">
                 <p>{error}</p>
               </div>
             )}
@@ -61,7 +61,7 @@ export default function SignInPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Email Address"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <input
                 id="password"
@@ -70,13 +70,13 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Password"
-                className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                className="w-full px-3 py-2 text-text bg-secondary border border-secondary-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
               />
               <button
                 type="submit"
-                className="w-full py-2 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
-                Sign In with Email
+                Sign In
               </button>
             </form>
 
@@ -85,10 +85,10 @@ export default function SignInPage() {
                 className="absolute inset-0 flex items-center"
                 aria-hidden="true"
               >
-                <div className="w-full border-t border-gray-700" />
+                <div className="w-full border-t border-secondary-dark dark:border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-background text-gray-500">
+                <span className="px-2 bg-white text-text-light dark:bg-gray-800 dark:text-gray-300">
                   Or continue with
                 </span>
               </div>
@@ -97,18 +97,18 @@ export default function SignInPage() {
             <div className="mt-6">
               <button
                 onClick={() => handleOAuthSignIn("github")}
-                className="w-full flex justify-center items-center py-2 px-4 border border-gray-600 rounded-full shadow-sm bg-transparent text-sm font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="w-full flex justify-center items-center py-2 px-4 border border-secondary-dark rounded-md shadow-sm bg-white text-sm font-medium text-text hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:text-white"
               >
                 {/* Add a GitHub icon here if you have one */}
                 Sign in with GitHub
               </button>
             </div>
 
-            <p className="mt-6 text-center text-sm text-gray-400">
+            <p className="mt-6 text-center text-sm text-text-light dark:text-gray-300">
               Don’t have an account?{" "}
               <Link
                 href="/auth/register"
-                className="font-medium text-pink-500 hover:text-pink-400"
+                className="font-medium text-primary hover:text-primary-light"
               >
                 Register
               </Link>

@@ -26,35 +26,21 @@ const JobListingCard: React.FC<JobListingCardProps> = ({
       : "Not specified";
 
   return (
-    <div className="m-5">
-      <div className="group mx-2 mt-10 grid max-w-screen-md grid-cols-12 space-x-8 overflow-hidden rounded-md border py-8 text-white shadow transition hover:shadow-lg sm:mx-auto duration-300 hover:rotate-1">
-        <div className="col-span-11 mx-2 flex flex-col pr-8 text-left sm:pl-4">
-          <h3 className="text-sm text-pink-500">{company}</h3>
-          <h1 className="mb-3 overflow-hidden pr-7 text-lg font-semibold sm:text-xl">
-            {title}
-          </h1>
-          
-          <div className="mt-5 flex flex-col space-y-3 text-sm font-medium text-gray-400 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-            <div className="">
-              Experience:
-              <span className="ml-2 mr-3 rounded-full bg-purple-100 px-2 py-0.5 text-purple-900">
-                {experience || "N/A"}
-              </span>
-            </div>
-            <div className="">
-              Salary:
-              <span className="ml-2 mr-3 rounded-full bg-blue-100 px-2 py-0.5 text-blue-900">
-                {salaryDisplay}
-              </span>
-            </div>
-            <div className="">
-              Location:
-              <span className="ml-2 mr-3 rounded-full bg-green-100 px-2 py-0.5 text-green-900">
-                {location}
-              </span>
-            </div>
-          </div>
+    <div className="bg-white rounded-lg shadow-md p-6 transition-shadow duration-300 hover:shadow-lg dark:bg-gray-800">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-sm text-primary font-medium">{company}</p>
+          <h2 className="text-xl font-bold text-text dark:text-white mt-1">{title}</h2>
         </div>
+        <div className="text-right">
+          <p className="text-lg font-semibold text-text dark:text-white">{salaryDisplay}</p>
+          <p className="text-sm text-text-light dark:text-gray-300">{location}</p>
+        </div>
+      </div>
+      <div className="mt-4 flex items-center space-x-4">
+        <span className="px-3 py-1 text-xs font-medium text-primary bg-primary bg-opacity-10 rounded-full dark:bg-opacity-20 dark:text-primary-light">
+          {experience || "N/A"}
+        </span>
       </div>
     </div>
   );

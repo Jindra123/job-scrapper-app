@@ -1,13 +1,5 @@
 "use client";
 
-import React from 'react';
-
-interface PaginationControlsProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
-
 import React, { useCallback } from 'react';
 
 interface PaginationControlsProps {
@@ -42,17 +34,17 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       <button
         onClick={handlePrevious}
         disabled={currentPage === 1}
-        className="px-4 py-2 border rounded-full text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-sm font-medium text-primary bg-white border border-primary rounded-md hover:bg-primary hover:text-white transition-colors disabled:bg-secondary disabled:text-text-light disabled:cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-primary dark:hover:bg-primary dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
       >
         Previous
       </button>
-      <span className="text-white">
+      <span className="text-text-light dark:text-gray-300">
         Page {currentPage} of {totalPages}
       </span>
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 border rounded-full text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
+        className="px-4 py-2 text-sm font-medium text-primary bg-white border border-primary rounded-md hover:bg-primary hover:text-white transition-colors disabled:bg-secondary disabled:text-text-light disabled:cursor-not-allowed dark:bg-gray-800 dark:text-white dark:border-primary dark:hover:bg-primary dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
       >
         Next
       </button>

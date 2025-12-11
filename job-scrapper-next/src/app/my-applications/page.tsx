@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { ApplicationStatus } from "@prisma/client";
 
 // Define interfaces for the data structure
 interface Company {
@@ -22,7 +23,7 @@ interface Job {
 
 interface Application {
   id: string;
-  status: "PENDING" | "REVIEWED" | "ACCEPTED" | "REJECTED";
+  status: ApplicationStatus;
   appliedAt: string;
   job: Job;
 }
@@ -71,25 +72,25 @@ export default async function MyApplicationsPage() {
   };
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-secondary dark:bg-gray-900">
       <Toaster />
       <Navbar />
       <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
           <Link
             href="/"
-            className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+            className="text-primary hover:text-primary-light transition-colors duration-300"
           >
             ← Back to Jobs
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-pink-500 mb-8">
+        <h1 className="text-3xl font-bold text-text dark:text-white mb-8">
           My Applications
         </h1>
 
         {applications.length === 0 ? (
-          <div className="bg-transparent shadow-2xl rounded-lg p-8 text-center">
-            <p className="text-gray-400">
+          <div className="bg-white shadow-md rounded-lg p-8 text-center dark:bg-gray-800">
+            <p className="text-text-light dark:text-gray-300">
               You haven't applied to any jobs yet.
             </p>
           </div>
@@ -98,7 +99,7 @@ export default async function MyApplicationsPage() {
             {applications.map((app) => (
               <div
                 key={app.id}
-                className="bg-transparent shadow-2xl rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-transform duration-300 hover:scale-105"
+                className="bg-white shadow-md rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-4 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-4">
                   <Image
@@ -111,16 +112,16 @@ export default async function MyApplicationsPage() {
                   <div>
                     <Link
                       href={`/jobs/${app.job.id}`}
-                      className="text-xl font-semibold text-pink-500 hover:underline"
+                      className="text-xl font-semibold text-primary hover:underline"
                     >
                       {app.job.title}
                     </Link>
                     <Link href={`/company/${app.job.creator.id}`}>
-                      <p className="text-md text-gray-300 hover:underline">
+                      <p className="text-md text-text-light dark:text-gray-300 hover:underline">
                         {app.job.creator.name}
                       </p>
                     </Link>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-text-light dark:text-gray-400 mt-1">
                       Applied on: {new Date(app.appliedAt).toLocaleDateString()}
                     </p>
                   </div>
